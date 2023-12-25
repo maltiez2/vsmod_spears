@@ -1,0 +1,13 @@
+{
+    "type": "content",
+    "modid": "maltiezspears",
+    "name": "Spears",
+    "authors": [
+        "Maltiez"
+    ],
+    "description": "",
+    "version": "0.0.1",
+    "dependencies": {
+        "game": "1.18.15"
+    }
+}
