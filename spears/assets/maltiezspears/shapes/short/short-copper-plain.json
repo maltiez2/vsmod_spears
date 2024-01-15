@@ -9,9 +9,9 @@
 	"textureSizes": {
 	},
 	"textures": {
-		"material": "game:block/metal/plate/copper",
-		"ebony": "game:block/wood/debarked/ebony",
-		"string": "game:item/tool/material/string"
+		"material": "block/metal/plate/copper",
+		"ebony": "block/wood/debarked/ebony",
+		"string": "item/tool/material/string"
 	},
 	"elements": [
 		{

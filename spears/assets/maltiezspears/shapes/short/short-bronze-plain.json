@@ -9,9 +9,9 @@
 	"textureSizes": {
 	},
 	"textures": {
-		"material": "game:block/metal/plate/tinbronze",
-		"larch": "game:block/wood/debarked/larch",
-		"string": "game:item/tool/material/string"
+		"material": "block/metal/plate/tinbronze",
+		"larch": "block/wood/debarked/larch",
+		"string": "item/tool/material/string"
 	},
 	"elements": [
 		{

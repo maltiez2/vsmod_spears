@@ -9,16 +9,17 @@
 	"textureSizes": {
 	},
 	"textures": {
-		"material": "game:block/stone/flint",
-		"oak": "game:block/wood/debarked/oak",
-		"string": "game:item/tool/material/string"
+		"material": "block/stone/flint",
+		"oak": "block/wood/debarked/oak",
+		"string": "item/tool/material/string"
 	},
 	"elements": [
 		{
 			"name": "Spear",
-			"from": [ 14.0, 0.5, 7.7 ],
-			"to": [ 14.0, 0.5, 7.7 ],
-			"rotationOrigin": [ 8.0, 0.0, 8.0 ],
+			"from": [ 6.0, 0.0, 0.0 ],
+			"to": [ 6.0, 0.0, 0.0 ],
+			"rotationOrigin": [ 0.0, 0.0, 0.0 ],
+			"rotationY": 90.0,
 			"faces": {
 				"north": { "texture": "#string", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
 				"east": { "texture": "#string", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
@@ -43,9 +44,10 @@
 					"children": [
 						{
 							"name": "shaft_1",
-							"from": [ -8.0, -0.5, -0.5 ],
-							"to": [ 8.0, 0.5, 0.5 ],
-							"rotationOrigin": [ -9.5, -8.0, 0.0 ],
+							"from": [ -8.0, -0.6, -0.5 ],
+							"to": [ 8.0, 0.4, 0.5 ],
+							"rotationOrigin": [ 0.0, -0.1, 0.0 ],
+							"rotationZ": 0.7,
 							"faces": {
 								"north": { "texture": "#oak", "uv": [ 0.0, 5.5, 16.0, 6.5 ] },
 								"east": { "texture": "#oak", "uv": [ 7.0, 0.5, 8.0, 1.5 ] },
@@ -57,10 +59,10 @@
 						},
 						{
 							"name": "shaft_2",
-							"from": [ -14.0, -0.5, -0.5 ],
-							"to": [ -8.0, 0.5, 0.5 ],
-							"rotationOrigin": [ -8.0, -0.5, 0.0 ],
-							"rotationZ": -2.0,
+							"from": [ -13.9, -0.7, -0.5 ],
+							"to": [ -7.9, 0.3, 0.5 ],
+							"rotationOrigin": [ -7.9, -0.7, 0.0 ],
+							"rotationZ": -3.0,
 							"faces": {
 								"north": { "texture": "#oak", "uv": [ 0.0, 5.5, 6.0, 6.5 ] },
 								"east": { "texture": "#oak", "uv": [ 0.5, 0.5, 1.5, 1.5 ] },
@@ -418,7 +420,7 @@
 								"east": { "texture": "#string", "uv": [ 10.5, 4.5, 12.0, 6.0 ] },
 								"south": { "texture": "#string", "uv": [ 9.0, 4.5, 9.5, 6.0 ] },
 								"west": { "texture": "#string", "uv": [ 9.5, 5.0, 11.0, 6.5 ] },
-								"up": { "texture": "#string", "uv": [ 9.5, 13.0, 10.0, 14.5 ] },
+								"up": { "texture": "#string", "uv": [ 11.0, 4.5, 11.5, 6.0 ] },
 								"down": { "texture": "#string", "uv": [ 10.0, 5.0, 10.5, 6.5 ] }
 							}
 						},
@@ -433,7 +435,7 @@
 								"east": { "texture": "#string", "uv": [ 10.5, 4.5, 11.5, 6.0 ] },
 								"south": { "texture": "#string", "uv": [ 9.0, 4.5, 9.5, 6.0 ] },
 								"west": { "texture": "#string", "uv": [ 9.5, 5.0, 10.5, 6.5 ] },
-								"up": { "texture": "#string", "uv": [ 9.5, 13.0, 10.0, 14.0 ] },
+								"up": { "texture": "#string", "uv": [ 10.5, 5.0, 11.0, 6.0 ] },
 								"down": { "texture": "#string", "uv": [ 10.0, 5.0, 10.5, 6.0 ] }
 							}
 						},
@@ -447,8 +449,8 @@
 								"east": { "texture": "#string", "uv": [ 10.5, 4.5, 12.0, 6.0 ] },
 								"south": { "texture": "#string", "uv": [ 9.0, 4.5, 10.0, 6.0 ], "autoUv": false },
 								"west": { "texture": "#string", "uv": [ 9.5, 5.0, 11.0, 6.5 ] },
-								"up": { "texture": "#string", "uv": [ 9.5, 13.0, 10.5, 14.5 ], "autoUv": false },
-								"down": { "texture": "#string", "uv": [ 10.0, 5.0, 11.0, 6.5 ], "autoUv": false }
+								"up": { "texture": "#string", "uv": [ 11.0, 4.0, 12.0, 5.5 ], "autoUv": false },
+								"down": { "texture": "#string", "uv": [ 13.5, 3.5, 14.5, 5.0 ], "autoUv": false }
 							}
 						},
 						{
@@ -462,7 +464,7 @@
 								"east": { "texture": "#string", "uv": [ 10.5, 4.5, 11.5, 6.0 ] },
 								"south": { "texture": "#string", "uv": [ 9.0, 4.5, 9.5, 6.0 ] },
 								"west": { "texture": "#string", "uv": [ 9.5, 5.0, 10.5, 6.5 ] },
-								"up": { "texture": "#string", "uv": [ 9.5, 13.0, 10.0, 14.0 ] },
+								"up": { "texture": "#string", "uv": [ 9.0, 4.5, 9.5, 5.5 ] },
 								"down": { "texture": "#string", "uv": [ 10.0, 5.0, 10.5, 6.0 ] }
 							}
 						}
