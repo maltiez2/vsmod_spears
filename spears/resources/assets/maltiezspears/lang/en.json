@@ -1,0 +1,21 @@
+{
+    "game:tabname-maltiezspears": "Spears",
+
+    "item-javelin-flint-plain": "Javelin (flint)",
+    "item-javelin-copper-plain": "Javelin (copper)",
+    "item-javelin-tinbronze-plain": "Javelin (tin bronze)",
+    "item-javelin-bismuthbronze-plain": "Javelin (bismuth bronze)",
+    "item-javelin-blackbronze-plain": "Javelin (black bronze)",
+    "item-javelin-iron-plain": "Javelin (iron)",
+    "item-javelin-steel-plain": "Javelin (steel)",
+
+    "item-spear-copper-plain": "Spear (copper)",
+    "item-spear-tinbronze-plain": "Spear (tin bronze)",
+    "item-spear-bismuthbronze-plain": "Spear (bismuth bronze)",
+    "item-spear-blackbronze-plain": "Spear (black bronze)",
+    "item-spear-iron-plain": "Spear (iron)",
+    "item-spear-steel-plain": "Spear (steel)",
+
+    "item-pike-iron-plain": "Pike (iron)",
+    "item-pike-steel-plain": "Pike (steel)"
+}
