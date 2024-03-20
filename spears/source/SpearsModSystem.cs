@@ -27,15 +27,15 @@ public class SpearItem : Item
 
         if (_clientApi != null) _animationSystem = new(_clientApi);
 
-
-        _fsm = new(api, this, _animationSystem);
+        _fsm = new(api, this);
+        //_fsm = new(api, this, _animationSystem);
     }
 
     public override void OnHeldRenderOpaque(ItemSlot inSlot, IClientPlayer byPlayer)
     {
         base.OnHeldRenderOpaque(inSlot, byPlayer);
 
-        _fsm?.DebugRender(byPlayer, inSlot);
+        //_fsm?.DebugRender(byPlayer, inSlot);
 
         _animationSystem?.Track(byPlayer);
     }
@@ -107,9 +107,9 @@ public class AnimationSystem
     private readonly AnimationId _meleeAttackAnimation;
 }
 
-public class SpearFsm : MaltiezFSM.Framework.Simplified.BaseItemInteractions
+public class SpearFsm_old : MaltiezFSM.Framework.Simplified.BaseItemInteractions
 {
-    public SpearFsm(ICoreAPI api, CollectibleObject collectible, AnimationSystem? animationSystem) : base(api, collectible)
+    public SpearFsm_old(ICoreAPI api, CollectibleObject collectible, AnimationSystem? animationSystem) : base(api, collectible)
     {
         _api = api;
 

@@ -6,9 +6,9 @@ using Vintagestory.API.Common;
 
 namespace Spears;
 
-public class SpearControls
+public abstract class BaseControls
 {
-    public SpearControls(ICoreAPI api, CollectibleObject collectible)
+    protected BaseControls(ICoreAPI api, CollectibleObject collectible)
     {
         Fsm = new FiniteStateMachineAttributesBased(api, States, "onehanded-lower-idle");
 
@@ -22,8 +22,8 @@ public class SpearControls
 
         RightMouseDown = new(api, "rmb", collectible, new(EnumEntityAction.RightMouseDown), inputProperties);
         LeftMouseDown = new(api, "lmb", collectible, new(EnumEntityAction.LeftMouseDown), inputProperties);
-        RightMouseUp = new(api, "rmb-up", collectible, new(EnumEntityAction.RightMouseDown));
-        LeftMouseUp = new(api, "lmb-up", collectible, new(EnumEntityAction.LeftMouseDown));
+        RightMouseUp = new(api, "rmb-up", collectible, new(EnumEntityAction.RightMouseDown) { OnRelease = true });
+        LeftMouseUp = new(api, "lmb-up", collectible, new(EnumEntityAction.LeftMouseDown) { OnRelease = true });
         StanceChange = new(api, "stance", collectible, Vintagestory.API.Client.GlKeys.R);
         GripChange = new(api, "grip", collectible, Vintagestory.API.Client.GlKeys.F);
         ItemDropped = new(api, "dropped", collectible, ISlotContentInput.SlotEventType.AllTaken);
@@ -32,7 +32,7 @@ public class SpearControls
         Fsm.Init(this, collectible);
     }
 
-    public enum StanceType
+    protected enum StanceType
     {
         OneHandedUpper,
         OneHandedLower,
@@ -64,7 +64,7 @@ public class SpearControls
 
     }
 
-    protected virtual void OnStanceChange(ItemSlot slot, IPlayer player, StanceType newStance)
+    protected virtual void OnStanceChange(ItemSlot slot, IPlayer player, StanceType newStance, bool blocking)
     {
 
     }
@@ -79,18 +79,18 @@ public class SpearControls
             (true, true) => StanceType.OneHandedLower,
             (true, false) => StanceType.OneHandedUpper,
             (false, true) => StanceType.TwoHandedLower,
-            (false, false) => StanceType.TwoHandedLower
+            (false, false) => StanceType.TwoHandedUpper
         };
     }
-    protected bool Blocking(ItemSlot slot) => Fsm.CheckState(slot, 1, "block");
-    protected bool Attacking(ItemSlot slot) => Fsm.CheckState(slot, 1, "attack");
+    protected bool Blocking(ItemSlot slot) => Fsm.CheckState(slot, 2, "block");
+    protected bool Attacking(ItemSlot slot) => Fsm.CheckState(slot, 2, "attack");
     protected void EnsureStance(ItemSlot slot, IPlayer player)
     {
         bool onehanded = Fsm.CheckState(slot, 0, "onehanded");
         if (player.Entity.LeftHandItemSlot.Empty || !onehanded) return;
         
         Fsm.SetState(slot, (0, "onehanded"));
-        OnStanceChange(slot, player, GetStance(slot));
+        OnStanceChange(slot, player, GetStance(slot), Blocking(slot));
     }
 
     #region FSM
@@ -142,7 +142,7 @@ public class SpearControls
         return false;
     }
 
-    [InputHandler(state: "@*-*-(idle|block)", "RightMouseDown")]
+    [InputHandler(states: new string[] { "*-*-idle", "*-*-block" }, "LeftMouseDown")]
     protected bool StartAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
@@ -155,7 +155,7 @@ public class SpearControls
         return false;
     }
 
-    [InputHandler(state: "*-*-attack", "RightMouseUp")]
+    [InputHandler(state: "*-*-attack", "LeftMouseUp")]
     protected bool CancelAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
@@ -164,7 +164,7 @@ public class SpearControls
         return false;
     }
 
-    [InputHandler(state: "*-*-(idle|attack)", "LeftMouseDown")]
+    [InputHandler(states: new string[] { "*-*-idle", "*-*-attack" }, "RightMouseDown")]
     protected bool StartBlock(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
@@ -177,46 +177,46 @@ public class SpearControls
         return false;
     }
 
-    [InputHandler(state: "*-*-block", "LeftMouseUp")]
+    [InputHandler(state: "*-*-block", "RightMouseUp")]
     protected bool CancelBlock(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
-        OnCancelBlock(slot, player, GetStance(slot));
         Fsm.SetState(slot, (2, "idle"));
+        OnCancelBlock(slot, player, GetStance(slot));
         return false;
     }
 
-    [InputHandler(state: "@*-lower-(idle|block)", "StanceChange")]
+    [InputHandler(states: new string[] { "*-lower-idle", "*-lower-block" }, "StanceChange")]
     protected bool ToggleStanceToLower(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
         Fsm.SetState(slot, (1, "upper"));
-        OnStanceChange(slot, player, GetStance(slot));
+        OnStanceChange(slot, player, GetStance(slot), Blocking(slot));
         return false;
     }
-    [InputHandler(state: "@*-upper-(idle|block)", "StanceChange")]
+    [InputHandler(states: new string[] { "*-upper-idle", "*-upper-block" }, "StanceChange")]
     protected bool ToggleStanceToUpper(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
         Fsm.SetState(slot, (1, "lower"));
-        OnStanceChange(slot, player, GetStance(slot));
+        OnStanceChange(slot, player, GetStance(slot), Blocking(slot));
         return false;
     }
 
-    [InputHandler(state: "@*-*-(idle|block)", "GripChange")]
+    [InputHandler(states: new string[] { "onehanded-*-idle", "onehanded-*-block" }, "GripChange")]
     protected bool ToggleGripToOnehanded(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
         Fsm.SetState(slot, (0, "twohanded"));
-        OnStanceChange(slot, player, GetStance(slot));
+        OnStanceChange(slot, player, GetStance(slot), Blocking(slot));
         return true;
     }
-    [InputHandler(state: "@*-*-(idle|block)", "GripChange")]
+    [InputHandler(states: new string[] { "twohanded-*-idle", "twohanded-*-block" }, "GripChange")]
     protected bool ToggleGripToTwohanded(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null || !player.Entity.LeftHandItemSlot.Empty) return false;
         Fsm.SetState(slot, (0, "onehanded"));
-        OnStanceChange(slot, player, GetStance(slot));
+        OnStanceChange(slot, player, GetStance(slot), Blocking(slot));
         return true;
     }
     #endregion
