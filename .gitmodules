@@ -1,0 +1,3 @@
+[submodule "vsmod_fsmlib"]
+	path = vsmod_fsmlib
+	url = https://github.com/maltiez2/vsmod_fsmlib
