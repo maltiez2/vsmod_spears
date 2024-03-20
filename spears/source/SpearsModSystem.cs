@@ -1,13 +1,10 @@
 ﻿using AnimationManagerLib;
 using AnimationManagerLib.API;
 using MaltiezFSM.Framework.Simplified.Systems;
-using MaltiezFSM.Systems;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Numerics;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 
 namespace Spears;
@@ -135,7 +132,7 @@ public class SpearFsm : MaltiezFSM.Framework.Simplified.BaseItemInteractions
         _api.Logger.Warning($"Attack start");
 
         if (_meleeSystem == null || _meleeAttack == null || player == null) return true;
-        
+
         _attackId = _meleeSystem.Start(player, _meleeAttack, slot, result => OnAttackHit(result, slot, player));
 
         _animationSystem?.StartAttack(player);
