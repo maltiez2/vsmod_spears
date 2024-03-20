@@ -9,8 +9,8 @@
 	"textureSizes": {
 	},
 	"textures": {
-		"head": "game:block/metal/plate/steel",
-		"shaft": "game:block/wood/debarked/walnut"
+		"head": "block/metal/plate/steel",
+		"shaft": "block/wood/debarked/walnut"
 	},
 	"elements": [
 		{

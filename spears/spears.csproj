@@ -23,10 +23,10 @@
       <Version>$(GameVersion)</Version>
     </Dependencies>
     <Dependencies Include="fsmlib">
-      <Version>0.2.15</Version>
+      <Version>0.3.0</Version>
     </Dependencies>
     <Dependencies Include="configlib">
-      <Version>0.4.2</Version>
+      <Version>1.0.0</Version>
     </Dependencies>
   </ItemGroup>
 
@@ -51,8 +51,17 @@
   </PropertyGroup>
 
   <!-- References to libraries that are being used in project -->
+  
   <ItemGroup>
     <!-- Vintage Story dependencies: wont be copied into output directory -->
+    <Reference Include="AnimationManager">
+      <HintPath>..\..\animationmanagerlib\AnimationManager\bin\Release\Mods\animationmanagerlib\AnimationManager.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="fsmlib">
+      <HintPath>..\..\fsmlib\fsmlib\bin\Release\Mods\fsmlib\fsmlib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="OpenTK.Compute">
       <HintPath>$(GameDirectory)\Lib\OpenTK.Compute.dll</HintPath>
       <Private>False</Private>
@@ -130,6 +139,9 @@
     <AssetsToFormat Include="$(AssetsDir)\$(ModId)\itemtypes" />
     <AssetsToFormat Include="$(AssetsDir)\$(ModId)\patches" />
     <AssetsToFormat Include="$(AssetsDir)\$(ModId)\entities" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="VSImGui_DebugTools" Version="0.0.6" />
   </ItemGroup>
 
   <!-- Startup settings -->
