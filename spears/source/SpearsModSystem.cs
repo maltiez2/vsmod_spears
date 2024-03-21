@@ -42,12 +42,12 @@ public class SpearItem : Item
 
     private SpearFsm? _fsm;
     private ICoreClientAPI? _clientApi;
-    private AnimationSystem? _animationSystem;
+    private AnimationSystem_old? _animationSystem;
 }
 
-public class AnimationSystem
+public class AnimationSystem_old
 {
-    public AnimationSystem(ICoreClientAPI api)
+    public AnimationSystem_old(ICoreClientAPI api)
     {
         _clientApi = api;
         _animationSystem = api.ModLoader.GetModSystem<AnimationManagerLibSystem>();
@@ -109,7 +109,7 @@ public class AnimationSystem
 
 public class SpearFsm_old : MaltiezFSM.Framework.Simplified.BaseItemInteractions
 {
-    public SpearFsm_old(ICoreAPI api, CollectibleObject collectible, AnimationSystem? animationSystem) : base(api, collectible)
+    public SpearFsm_old(ICoreAPI api, CollectibleObject collectible, AnimationSystem_old? animationSystem) : base(api, collectible)
     {
         _api = api;
 
@@ -133,7 +133,7 @@ public class SpearFsm_old : MaltiezFSM.Framework.Simplified.BaseItemInteractions
 
         if (_meleeSystem == null || _meleeAttack == null || player == null) return true;
 
-        _attackId = _meleeSystem.Start(player, _meleeAttack, slot, result => OnAttackHit(result, slot, player));
+        //_attackId = _meleeSystem.Start(player, _meleeAttack, slot, result => OnAttackHit(result, slot, player));
 
         _animationSystem?.StartAttack(player);
 
@@ -182,14 +182,14 @@ public class SpearFsm_old : MaltiezFSM.Framework.Simplified.BaseItemInteractions
     {
         _api.Logger.Warning($"Attack cancel");
         _animationSystem?.StopAttack(player);
-        _meleeSystem?.Stop(_attackId);
+        _meleeSystem?.Stop(_attackId, player);
         return true;
     }
 
     private readonly MeleeSystem? _meleeSystem;
     private readonly MeleeAttack? _meleeAttack;
     private readonly MeleeAttackDamageType? _meleeAttackDamageType;
-    private readonly AnimationSystem? _animationSystem;
+    private readonly AnimationSystem_old? _animationSystem;
     private readonly ICoreAPI _api;
     private long _attackId = 0;
 }

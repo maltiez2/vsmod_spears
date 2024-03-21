@@ -69,6 +69,18 @@ public abstract class BaseControls
 
     }
 
+    protected void CancelAttack(ItemSlot slot, IPlayer player)
+    {
+        Fsm.SetState(slot, (2, "idle"));
+        OnCancelAttack(slot, player, GetStance(slot));
+    }
+
+    protected void CancelBlock(ItemSlot slot, IPlayer player)
+    {
+        Fsm.SetState(slot, (2, "idle"));
+        OnCancelBlock(slot, player, GetStance(slot));
+    }
+
     protected StanceType GetStance(ItemSlot slot)
     {
         bool onehanded = Fsm.CheckState(slot, 0, "onehanded");
@@ -95,7 +107,7 @@ public abstract class BaseControls
 
     #region FSM
     protected IFiniteStateMachineAttributesBased Fsm;
-    protected static readonly List<HashSet<string>> States = new()
+    private static readonly List<HashSet<string>> States = new()
     {
         new() // Grip
         {
@@ -116,25 +128,25 @@ public abstract class BaseControls
     };
 
     [Input]
-    protected ActionInput RightMouseDown { get; }
+    private ActionInput RightMouseDown { get; }
     [Input]
-    protected ActionInput LeftMouseDown { get; }
+    private ActionInput LeftMouseDown { get; }
     [Input]
-    protected ActionInput RightMouseUp { get; }
+    private ActionInput RightMouseUp { get; }
     [Input]
-    protected ActionInput LeftMouseUp { get; }
+    private ActionInput LeftMouseUp { get; }
     [Input]
-    protected KeyboardKey StanceChange { get; }
+    private KeyboardKey StanceChange { get; }
     [Input]
-    protected KeyboardKey GripChange { get; }
+    private KeyboardKey GripChange { get; }
 
     [Input]
-    protected SlotContent ItemDropped { get; }
+    private SlotContent ItemDropped { get; }
     [Input]
-    protected BeforeSlotChanged SlotDeselected { get; }
+    private BeforeSlotChanged SlotDeselected { get; }
 
     [InputHandler(state: "*-*-*", "ItemDropped", "SlotDeselected")]
-    protected bool Deselected(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    private bool Deselected(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
         Fsm.SetState(slot, "onehanded-lower-idle");
@@ -143,7 +155,7 @@ public abstract class BaseControls
     }
 
     [InputHandler(states: new string[] { "*-*-idle", "*-*-block" }, "LeftMouseDown")]
-    protected bool StartAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    private bool StartAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
         EnsureStance(slot, player);
@@ -156,16 +168,16 @@ public abstract class BaseControls
     }
 
     [InputHandler(state: "*-*-attack", "LeftMouseUp")]
-    protected bool CancelAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    private bool CancelAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
-        OnCancelAttack(slot, player, GetStance(slot));
         Fsm.SetState(slot, (2, "idle"));
+        OnCancelAttack(slot, player, GetStance(slot));
         return false;
     }
 
     [InputHandler(states: new string[] { "*-*-idle", "*-*-attack" }, "RightMouseDown")]
-    protected bool StartBlock(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    private bool StartBlock(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
         EnsureStance(slot, player);
@@ -178,7 +190,7 @@ public abstract class BaseControls
     }
 
     [InputHandler(state: "*-*-block", "RightMouseUp")]
-    protected bool CancelBlock(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    private bool CancelBlock(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
         Fsm.SetState(slot, (2, "idle"));
@@ -187,7 +199,7 @@ public abstract class BaseControls
     }
 
     [InputHandler(states: new string[] { "*-lower-idle", "*-lower-block" }, "StanceChange")]
-    protected bool ToggleStanceToLower(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    private bool ToggleStanceToLower(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
         Fsm.SetState(slot, (1, "upper"));
@@ -195,7 +207,7 @@ public abstract class BaseControls
         return false;
     }
     [InputHandler(states: new string[] { "*-upper-idle", "*-upper-block" }, "StanceChange")]
-    protected bool ToggleStanceToUpper(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    private bool ToggleStanceToUpper(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
         Fsm.SetState(slot, (1, "lower"));
@@ -204,7 +216,7 @@ public abstract class BaseControls
     }
 
     [InputHandler(states: new string[] { "onehanded-*-idle", "onehanded-*-block" }, "GripChange")]
-    protected bool ToggleGripToOnehanded(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    private bool ToggleGripToOnehanded(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
         Fsm.SetState(slot, (0, "twohanded"));
@@ -212,7 +224,7 @@ public abstract class BaseControls
         return true;
     }
     [InputHandler(states: new string[] { "twohanded-*-idle", "twohanded-*-block" }, "GripChange")]
-    protected bool ToggleGripToTwohanded(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    private bool ToggleGripToTwohanded(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null || !player.Entity.LeftHandItemSlot.Empty) return false;
         Fsm.SetState(slot, (0, "onehanded"));
