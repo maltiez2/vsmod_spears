@@ -147,7 +147,7 @@ public sealed class SpearAnimationSystem : BaseSystem
     private readonly static Random _rand = new();
     private Dictionary<AnimationType, List<AnimationParameters>> _animations = new();
 
-    private static int GetRandomIndex(int count) => (int)Math.Floor((decimal)(_rand.NextDouble() % (count - 1)));
+    private static int GetRandomIndex(int count) => _rand.Next(0, count - 1);
 }
 
 public sealed class SpearAttacksSystem : BaseSystem

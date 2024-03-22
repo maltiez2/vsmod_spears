@@ -13,27 +13,41 @@ public class SpearFsm : BaseControls
 {
     public SpearFsm(ICoreAPI api, CollectibleObject collectible, SpearStats stats) : base(api, collectible)
     {
+        Console.WriteLine("Init SpearFsm");
+
         if (api is ICoreClientAPI clientApi)
         {
             AnimationSystem = new(clientApi, debugName: "spears-animations");
-            AttacksSystem = new(api, AnimationSystem, GetAttacks(stats, clientApi), debugName: "spears-attacks");
+            _attacksForDebugRendering = GetAttacks(stats, clientApi);
+            AttacksSystem = new(api, AnimationSystem, _attacksForDebugRendering, debugName: "spears-attacks");
 
             AnimationSystem.RegisterAnimations(GetAnimations());
 
-            MaltiezFSM.Systems.IParticleEffectsManager? efectsManager = api.ModLoader.GetModSystem<FiniteStateMachineSystem>().ParticleEffects;
-            AdvancedParticleProperties entityHit = efectsManager?.Get("entity-hit-blood", "maltiezspears");
-            AdvancedParticleProperties terrainHit = efectsManager?.Get("terrain-hit-sparks", "maltiezspears");
+            MaltiezFSM.Systems.IParticleEffectsManager? effectsManager = api.ModLoader.GetModSystem<FiniteStateMachineSystem>().ParticleEffects;
+            AdvancedParticleProperties? entityHit = effectsManager?.Get("entity-hit-blood", "maltiezspears");
+            AdvancedParticleProperties? terrainHit = effectsManager?.Get("terrain-hit-sparks", "maltiezspears");
 
             if (terrainHit != null) _terrainHitEffects.Add("*stone*", terrainHit);
             if (entityHit != null) _entityHitEffects.Add("*", entityHit);
+        }
+        else
+        {
+            AttacksSystem = new(api, AnimationSystem, GetAttacks(stats, api), debugName: "spears-attacks");
         }
 
         Stats = stats;
     }
 
+    private Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack>? _attacksForDebugRendering;
+    private SpearAnimationSystem.AnimationType? _lastAttack;
     public virtual void OnRender(ItemSlot slot, IClientPlayer player)
     {
         AnimationSystem?.Track(player);
+
+        if (_attacksForDebugRendering != null && _lastAttack != null)
+        {
+            _attacksForDebugRendering[_lastAttack.Value].RenderDebugColliders(player, slot);
+        }
     }
 
     protected readonly SpearAnimationSystem? AnimationSystem;
@@ -43,6 +57,7 @@ public class SpearFsm : BaseControls
     protected override bool OnStartAttack(ItemSlot slot, IPlayer player, StanceType stanceType, bool blocking)
     {
         Console.WriteLine($"OnStartAttack: {stanceType} (blocking: {blocking})");
+        _lastAttack = GetAttackAnimationType(stanceType, blocking);
         AttacksSystem?.Start(GetAttackAnimationType(stanceType, blocking), player, slot, terrainCollisionCallback: () => OnTerrainHit(slot, player, blocking));
         return true;
     }
@@ -117,7 +132,7 @@ public class SpearFsm : BaseControls
         };
     }
 
-    private Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack> GetAttacks(SpearStats stats, ICoreClientAPI api)
+    private Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack> GetAttacks(SpearStats stats, ICoreAPI api)
     {
         Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack> result = new();
 
@@ -129,7 +144,7 @@ public class SpearFsm : BaseControls
 
         return result;
     }
-    private MeleeAttack? GetAttack(SpearAnimationSystem.AnimationType attackType, SpearStats stats, ICoreClientAPI api)
+    private MeleeAttack? GetAttack(SpearAnimationSystem.AnimationType attackType, SpearStats stats, ICoreAPI api)
     {
         HitWindow hitWindow;
 
@@ -158,7 +173,7 @@ public class SpearFsm : BaseControls
         if (headDamage != null) damageTypes.Add(headDamage);
         if (shaftDamage != null) damageTypes.Add(shaftDamage);
 
-        return new MeleeAttack(api, hitWindow, damageTypes, stats.MaxReach);
+        return new MeleeAttack(api as ICoreClientAPI, hitWindow, damageTypes, stats.MaxReach);
     }
     private MeleeAttackDamageType? GetAttackDamageType(SpearAnimationSystem.AnimationType attackType, SpearStats stats)
     {
@@ -171,8 +186,8 @@ public class SpearFsm : BaseControls
                         damageType: EnumDamageType.PiercingAttack,
                         collider: new(stats.SpearHeadCollider),
                         tier: stats.OneHandedTier,
-                        hitSound: new(stats.HeadHitEntitySound),
-                        terrainSound: new(stats.HeadHitTerrainSound)
+                        hitSound: stats.HeadHitEntitySound != null ? new(stats.HeadHitEntitySound) : null,
+                        terrainSound: stats.HeadHitTerrainSound != null ? new(stats.HeadHitTerrainSound) : null
 
                     )
                 {
@@ -186,8 +201,8 @@ public class SpearFsm : BaseControls
                         damageType: EnumDamageType.PiercingAttack,
                         collider: new(stats.SpearHeadCollider),
                         tier: stats.TwoHandedTier,
-                        hitSound: new(stats.HeadHitEntitySound),
-                        terrainSound: new(stats.HeadHitTerrainSound),
+                        hitSound: stats.HeadHitEntitySound != null ? new(stats.HeadHitEntitySound) : null,
+                        terrainSound: stats.HeadHitTerrainSound != null ? new(stats.HeadHitTerrainSound) : null,
                         knockback: stats.TwoHandedKnockback
                     )
                 {
@@ -203,8 +218,8 @@ public class SpearFsm : BaseControls
                         damageType: EnumDamageType.BluntAttack,
                         collider: new(stats.ShaftCollider),
                         tier: 0,
-                        hitSound: new(stats.ShaftHitEntitySound),
-                        terrainSound: new(stats.ShaftHitTerrainSound),
+                        hitSound: stats.ShaftHitEntitySound != null ? new(stats.ShaftHitEntitySound) : null,
+                        terrainSound: stats.ShaftHitTerrainSound != null ? new(stats.ShaftHitTerrainSound) : null,
                         knockback: stats.PushKnockback
                     );
             default: return null;
@@ -223,8 +238,8 @@ public class SpearFsm : BaseControls
                         damageType: EnumDamageType.BluntAttack,
                         collider: new(stats.ShaftCollider),
                         tier: 0,
-                        hitSound: new(stats.ShaftHitEntitySound),
-                        terrainSound: new(stats.ShaftHitTerrainSound),
+                        hitSound: stats.ShaftHitEntitySound != null ? new(stats.ShaftHitEntitySound) : null,
+                        terrainSound: stats.ShaftHitTerrainSound != null ? new(stats.ShaftHitTerrainSound) : null,
                         knockback: stats.ShaftHitKnockback
                     );
             default: return null;
@@ -254,9 +269,10 @@ public class SpearFsm : BaseControls
         return animationType switch
         {
             SpearAnimationSystem.AnimationType.Low1hAttack => new(
-                "low-1h-attack",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 10, ProgressModifierType.Sin),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 20, ProgressModifierType.Quadratic)
+                "spear-high-2h-attack",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(200), 10, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 15, ProgressModifierType.Cubic),
+                RunParameters.EaseOut(TimeSpan.FromMilliseconds(1000), ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.High1hAttack => empty,
             SpearAnimationSystem.AnimationType.Low2hAttack => empty,

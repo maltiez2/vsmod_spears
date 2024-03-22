@@ -38,21 +38,91 @@
       "quantityframes": 1,
       "onActivityStopped": "EaseOut",
       "onAnimationEnd": "Hold",
-      "keyframes": [
-        {
-          "frame": 0,
-          "elements": {
-            "LowerTorso": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
-            "UpperTorso": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
-            "Neck": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
-            "Head": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
-            "UpperArmL": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
-            "LowerArmL": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
-            "UpperArmR": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
-            "LowerArmR": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0}
-          }
-        }
-      ]
+      "keyframes": [{"frame": 0, "elements": {}}]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "spearsempty-legs", "animation": "spearsempty-legs", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "spearsempty",
+      "code": "spearsempty",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 1,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [{"frame": 0, "elements": {}}]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "spearsempty-legs-fp", "animation": "spearsempty-legs-fp", "animationSpeed": 16, "blendMode": "Average"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "spearsempty-fp",
+      "code": "spearsempty-fp",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 1,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [{"frame": 0, "elements": {}}]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "spearsempty-hands", "animation": "spearsempty-hands", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "spearsempty-hands",
+      "code": "spearsempty-hands",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 1,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [{"frame": 0, "elements": {}}]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "spearsempty-hands-fp", "animation": "spearsempty-hands-fp", "animationSpeed": 16, "blendMode": "Average"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "spearsempty-hands-fp",
+      "code": "spearsempty-hands-fp",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 1,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [{"frame": 0, "elements": {}}]
     }
   }
 ]
