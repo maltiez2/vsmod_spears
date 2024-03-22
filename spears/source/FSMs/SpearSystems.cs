@@ -25,7 +25,11 @@ public sealed class SpearAnimationSystem : BaseSystem
         Low1hBlock,
         High1hBlock,
         Low2hBlock,
-        High2hBlock
+        High2hBlock,
+        Low1hStance,
+        High1hStance,
+        Low2hStance,
+        High2hStance
     }
     public readonly struct AnimationParameters
     {
@@ -41,16 +45,19 @@ public sealed class SpearAnimationSystem : BaseSystem
 
         public AnimationParameters(string code, params RunParameters[] parameters)
         {
+            long id = _id++;
             HandsTpCode = $"{code}-hands";
             LegsTpCode = $"{code}-legs";
             HandsFpCode = $"{code}-hands-fp";
             LegsFpCode = $"{code}-legs-fp";
-            HandsTp = new("hands", HandsTpCode, EnumAnimationBlendMode.Average, weight: 512);
-            LegsTp = new("hands", LegsTpCode, EnumAnimationBlendMode.Average, weight: 1);
-            HandsFp = new("hands", HandsFpCode, EnumAnimationBlendMode.Average, weight: 512);
-            LegsFp = new("hands", LegsFpCode, EnumAnimationBlendMode.Average, weight: 1);
+            HandsTp = new("hands", $"{HandsTpCode}-{id}", EnumAnimationBlendMode.Average, weight: 512);
+            LegsTp = new("hands", $"{LegsTpCode}-{id}", EnumAnimationBlendMode.Average, weight: 1);
+            HandsFp = new("hands", $"{HandsFpCode}-{id}", EnumAnimationBlendMode.Average, weight: 512);
+            LegsFp = new("hands", $"{LegsFpCode}-{id}", EnumAnimationBlendMode.Average, weight: 1);
             Parameters = parameters;
         }
+
+        private static long _id = 0;
     }
 
     public SpearAnimationSystem(ICoreClientAPI api, string debugName = "") : base(api, debugName)
@@ -113,6 +120,10 @@ public sealed class SpearAnimationSystem : BaseSystem
         _animationSystem.Run(tpTarget, new AnimationSequence(parameters.LegsTp, runParameters));
         _animationSystem.Run(fpTarget, new AnimationSequence(parameters.HandsFp, runParameters), synchronize: false);
         _animationSystem.Run(fpTarget, new AnimationSequence(parameters.LegsFp, runParameters), synchronize: false);
+    }
+    public void EaseOut(IPlayer player, TimeSpan duration)
+    {
+        EaseOut(player, AnimationType.Low2hStance, duration);
     }
     public void RegisterAnimations(Dictionary<AnimationType, List<AnimationParameters>> animations)
     {

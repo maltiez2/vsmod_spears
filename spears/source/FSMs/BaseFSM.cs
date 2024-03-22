@@ -54,12 +54,12 @@ public abstract class BaseControls
         return false;
     }
 
-    protected virtual void OnCancelAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
+    protected virtual void OnCancelAttack(ItemSlot slot, IPlayer player, StanceType stanceType, bool blocking)
     {
 
     }
 
-    protected virtual void OnCancelBlock(ItemSlot slot, IPlayer player, StanceType stanceType)
+    protected virtual void OnCancelBlock(ItemSlot slot, IPlayer player, StanceType stanceType, bool attacking)
     {
 
     }
@@ -69,16 +69,16 @@ public abstract class BaseControls
 
     }
 
-    protected void CancelAttack(ItemSlot slot, IPlayer player)
+    protected void CancelAttack(ItemSlot slot, IPlayer player, bool blocking)
     {
         Fsm.SetState(slot, (2, "idle"));
-        OnCancelAttack(slot, player, GetStance(slot));
+        OnCancelAttack(slot, player, GetStance(slot), blocking);
     }
 
-    protected void CancelBlock(ItemSlot slot, IPlayer player)
+    protected void CancelBlock(ItemSlot slot, IPlayer player, bool attacking)
     {
         Fsm.SetState(slot, (2, "idle"));
-        OnCancelBlock(slot, player, GetStance(slot));
+        OnCancelBlock(slot, player, GetStance(slot), attacking);
     }
 
     protected StanceType GetStance(ItemSlot slot)
@@ -172,7 +172,7 @@ public abstract class BaseControls
     {
         if (player == null) return false;
         Fsm.SetState(slot, (2, "idle"));
-        OnCancelAttack(slot, player, GetStance(slot));
+        OnCancelAttack(slot, player, GetStance(slot), Blocking(slot));
         return false;
     }
 
@@ -194,7 +194,7 @@ public abstract class BaseControls
     {
         if (player == null) return false;
         Fsm.SetState(slot, (2, "idle"));
-        OnCancelBlock(slot, player, GetStance(slot));
+        OnCancelBlock(slot, player, GetStance(slot), Attacking(slot));
         return false;
     }
 

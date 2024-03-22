@@ -23,26 +23,17 @@ public class SpearItem : Item
     {
         base.OnLoaded(api);
 
-        _clientApi = api as ICoreClientAPI;
-
-        if (_clientApi != null) _animationSystem = new(_clientApi);
-
         _fsm = new(api, this);
-        //_fsm = new(api, this, _animationSystem);
     }
 
     public override void OnHeldRenderOpaque(ItemSlot inSlot, IClientPlayer byPlayer)
     {
         base.OnHeldRenderOpaque(inSlot, byPlayer);
 
-        //_fsm?.DebugRender(byPlayer, inSlot);
-
-        _animationSystem?.Track(byPlayer);
+        _fsm?.OnRender(inSlot, byPlayer);
     }
 
     private SpearFsm? _fsm;
-    private ICoreClientAPI? _clientApi;
-    private AnimationSystem_old? _animationSystem;
 }
 
 public class AnimationSystem_old
@@ -105,91 +96,4 @@ public class AnimationSystem_old
     private readonly IAnimationManagerSystem _animationSystem;
     private readonly AnimationId _verticalTrackingAnimation;
     private readonly AnimationId _meleeAttackAnimation;
-}
-
-public class SpearFsm_old : MaltiezFSM.Framework.Simplified.BaseItemInteractions
-{
-    public SpearFsm_old(ICoreAPI api, CollectibleObject collectible, AnimationSystem_old? animationSystem) : base(api, collectible)
-    {
-        _api = api;
-
-        if (api is ICoreClientAPI clientApi)
-        {
-            _meleeSystem = new(clientApi, "SpearMeleeSystem");
-            _meleeAttackDamageType = new(5.0f, EnumDamageType.PiercingAttack, new(new(0, 0.05f, -1.6f), new(0, 0, -0.5f)));
-            _meleeAttack = new(clientApi, new(TimeSpan.FromSeconds(0.3f), TimeSpan.FromSeconds(0.5f)), new MeleeAttackDamageType[] { _meleeAttackDamageType }, 5.0f);
-            _animationSystem = animationSystem;
-        }
-    }
-
-    public void DebugRender(IClientPlayer byPlayer, ItemSlot inSlot)
-    {
-        _meleeAttack?.RenderDebugColliders(byPlayer, inSlot);
-    }
-
-    protected override bool OnAttackStart(ItemSlot slot, IPlayer? player)
-    {
-        _api.Logger.Warning($"Attack start");
-
-        if (_meleeSystem == null || _meleeAttack == null || player == null) return true;
-
-        //_attackId = _meleeSystem.Start(player, _meleeAttack, slot, result => OnAttackHit(result, slot, player));
-
-        _animationSystem?.StartAttack(player);
-
-        return true;
-    }
-
-    protected virtual bool OnAttackHit(MeleeAttack.AttackResult result, ItemSlot inSlot, IPlayer player)
-    {
-        _api.Logger.Warning($"Attack hit: {result.Result}");
-
-        if (result.Terrain != null)
-        {
-            foreach ((_, Vector3 point) in result.Terrain)
-            {
-                AdvancedParticleProperties advancedParticleProperties = new();
-                advancedParticleProperties.basePos.X = point.X;
-                advancedParticleProperties.basePos.Y = point.Y;
-                advancedParticleProperties.basePos.Z = point.Z;
-                _api.World.SpawnParticles(advancedParticleProperties);
-            }
-        }
-
-        if (result.Entities != null)
-        {
-            foreach ((_, Vector3 point) in result.Entities)
-            {
-                AdvancedParticleProperties advancedParticleProperties = new();
-                advancedParticleProperties.basePos.X = point.X;
-                advancedParticleProperties.basePos.Y = point.Y;
-                advancedParticleProperties.basePos.Z = point.Z;
-                _api.World.SpawnParticles(advancedParticleProperties);
-            }
-        }
-
-        if (result.Result == MeleeAttack.Result.HitTerrain || result.Result == MeleeAttack.Result.Finished)
-        {
-            Fsm.SetState(inSlot, "idle");
-            _animationSystem?.StopAttack(player);
-            return true;
-        }
-
-        return false;
-    }
-
-    protected override bool OnAttackCancel(ItemSlot slot, IPlayer? player)
-    {
-        _api.Logger.Warning($"Attack cancel");
-        _animationSystem?.StopAttack(player);
-        _meleeSystem?.Stop(_attackId, player);
-        return true;
-    }
-
-    private readonly MeleeSystem? _meleeSystem;
-    private readonly MeleeAttack? _meleeAttack;
-    private readonly MeleeAttackDamageType? _meleeAttackDamageType;
-    private readonly AnimationSystem_old? _animationSystem;
-    private readonly ICoreAPI _api;
-    private long _attackId = 0;
 }
