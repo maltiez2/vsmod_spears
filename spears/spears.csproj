@@ -143,9 +143,6 @@
   <ItemGroup>
     <PackageReference Include="VSImGui_DebugTools" Version="0.0.6" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="resources\assets\maltiezspears\config\" />
-  </ItemGroup>
 
   <!-- Startup settings -->
   <PropertyGroup>

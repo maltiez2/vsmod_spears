@@ -1,8 +1,6 @@
 ﻿using AnimationManagerLib;
 using AnimationManagerLib.API;
-using MaltiezFSM.Framework.Simplified.Systems;
 using System;
-using System.Numerics;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
@@ -23,7 +21,9 @@ public class SpearItem : Item
     {
         base.OnLoaded(api);
 
-        _fsm = new(api, this);
+        SpearStats stats;
+
+        _fsm = new(api, this, stats);
     }
 
     public override void OnHeldRenderOpaque(ItemSlot inSlot, IClientPlayer byPlayer)

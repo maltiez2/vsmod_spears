@@ -1,11 +1,11 @@
 ﻿using AnimationManagerLib.API;
+using MaltiezFSM;
 using MaltiezFSM.Framework.Simplified.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using static OpenTK.Graphics.OpenGL.GL;
 
 namespace Spears;
 
@@ -19,6 +19,13 @@ public class SpearFsm : BaseControls
             AttacksSystem = new(api, AnimationSystem, GetAttacks(stats, clientApi), debugName: "spears-attacks");
 
             AnimationSystem.RegisterAnimations(GetAnimations());
+
+            MaltiezFSM.Systems.IParticleEffectsManager? efectsManager = api.ModLoader.GetModSystem<FiniteStateMachineSystem>().ParticleEffects;
+            AdvancedParticleProperties entityHit = efectsManager?.Get("entity-hit-blood", "maltiezspears");
+            AdvancedParticleProperties terrainHit = efectsManager?.Get("terrain-hit-sparks", "maltiezspears");
+
+            if (terrainHit != null) _terrainHitEffects.Add("*stone*", terrainHit);
+            if (entityHit != null) _entityHitEffects.Add("*", entityHit);
         }
 
         Stats = stats;
@@ -72,10 +79,9 @@ public class SpearFsm : BaseControls
         return false;
     }
 
-
-    //private AdvancedParticleProperties _headHitParticles;
-    //private AdvancedParticleProperties _shaftHitParticles;
     private readonly TimeSpan _easeOutTime = TimeSpan.FromSeconds(0.6);
+    private readonly Dictionary<string, AdvancedParticleProperties> _terrainHitEffects = new();
+    private readonly Dictionary<string, AdvancedParticleProperties> _entityHitEffects = new();
 
     private static SpearAnimationSystem.AnimationType GetAttackAnimationType(StanceType stance, bool blocking)
     {
@@ -111,7 +117,7 @@ public class SpearFsm : BaseControls
         };
     }
 
-    private static Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack> GetAttacks(SpearStats stats, ICoreClientAPI api)
+    private Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack> GetAttacks(SpearStats stats, ICoreClientAPI api)
     {
         Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack> result = new();
 
@@ -123,7 +129,7 @@ public class SpearFsm : BaseControls
 
         return result;
     }
-    private static MeleeAttack? GetAttack(SpearAnimationSystem.AnimationType attackType, SpearStats stats, ICoreClientAPI api)
+    private MeleeAttack? GetAttack(SpearAnimationSystem.AnimationType attackType, SpearStats stats, ICoreClientAPI api)
     {
         HitWindow hitWindow;
 
@@ -154,7 +160,7 @@ public class SpearFsm : BaseControls
 
         return new MeleeAttack(api, hitWindow, damageTypes, stats.MaxReach);
     }
-    private static MeleeAttackDamageType? GetAttackDamageType(SpearAnimationSystem.AnimationType attackType, SpearStats stats)
+    private MeleeAttackDamageType? GetAttackDamageType(SpearAnimationSystem.AnimationType attackType, SpearStats stats)
     {
         switch (attackType)
         {
@@ -167,7 +173,12 @@ public class SpearFsm : BaseControls
                         tier: stats.OneHandedTier,
                         hitSound: new(stats.HeadHitEntitySound),
                         terrainSound: new(stats.HeadHitTerrainSound)
-                    );
+
+                    )
+                {
+                    TerrainCollisionParticles = _terrainHitEffects,
+                    EntityCollisionParticles = _entityHitEffects
+                };
             case SpearAnimationSystem.AnimationType.High2hAttack:
             case SpearAnimationSystem.AnimationType.Low2hAttack:
                 return new MeleeAttackDamageType(
@@ -176,8 +187,13 @@ public class SpearFsm : BaseControls
                         collider: new(stats.SpearHeadCollider),
                         tier: stats.TwoHandedTier,
                         hitSound: new(stats.HeadHitEntitySound),
-                        terrainSound: new(stats.HeadHitTerrainSound)
-                    );
+                        terrainSound: new(stats.HeadHitTerrainSound),
+                        knockback: stats.TwoHandedKnockback
+                    )
+                {
+                    TerrainCollisionParticles = _terrainHitEffects,
+                    EntityCollisionParticles = _entityHitEffects
+                };
             case SpearAnimationSystem.AnimationType.Low1hBlockAttack:
             case SpearAnimationSystem.AnimationType.High1hBlockAttack:
             case SpearAnimationSystem.AnimationType.Low2hBlockAttack:
@@ -229,6 +245,12 @@ public class SpearFsm : BaseControls
     }
     private static SpearAnimationSystem.AnimationParameters GetAnimation(SpearAnimationSystem.AnimationType animationType)
     {
+        SpearAnimationSystem.AnimationParameters empty = new(
+            "spearsempty",
+            RunParameters.EaseOut(TimeSpan.FromMilliseconds(1000))
+            );
+
+
         return animationType switch
         {
             SpearAnimationSystem.AnimationType.Low1hAttack => new(
@@ -236,21 +258,21 @@ public class SpearFsm : BaseControls
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 10, ProgressModifierType.Sin),
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 20, ProgressModifierType.Quadratic)
                 ),
-            SpearAnimationSystem.AnimationType.High1hAttack => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.Low2hAttack => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.High2hAttack => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.Low1hBlockAttack => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.High1hBlockAttack => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.Low2hBlockAttack => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.High2hBlockAttack => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.Low1hBlock => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.High1hBlock => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.Low2hBlock => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.High2hBlock => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.Low1hStance => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.High1hStance => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.Low2hStance => throw new NotImplementedException(),
-            SpearAnimationSystem.AnimationType.High2hStance => throw new NotImplementedException(),
+            SpearAnimationSystem.AnimationType.High1hAttack => empty,
+            SpearAnimationSystem.AnimationType.Low2hAttack => empty,
+            SpearAnimationSystem.AnimationType.High2hAttack => empty,
+            SpearAnimationSystem.AnimationType.Low1hBlockAttack => empty,
+            SpearAnimationSystem.AnimationType.High1hBlockAttack => empty,
+            SpearAnimationSystem.AnimationType.Low2hBlockAttack => empty,
+            SpearAnimationSystem.AnimationType.High2hBlockAttack => empty,
+            SpearAnimationSystem.AnimationType.Low1hBlock => empty,
+            SpearAnimationSystem.AnimationType.High1hBlock => empty,
+            SpearAnimationSystem.AnimationType.Low2hBlock => empty,
+            SpearAnimationSystem.AnimationType.High2hBlock => empty,
+            SpearAnimationSystem.AnimationType.Low1hStance => empty,
+            SpearAnimationSystem.AnimationType.High1hStance => empty,
+            SpearAnimationSystem.AnimationType.Low2hStance => empty,
+            SpearAnimationSystem.AnimationType.High2hStance => empty,
             _ => throw new NotImplementedException()
         };
     }

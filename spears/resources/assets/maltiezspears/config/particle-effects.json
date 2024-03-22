@@ -1,0 +1,226 @@
+{
+  "terrain-hit-sparks": {
+    "HsvaColor": [
+      {
+        "offset": 0.0,
+        "avg": 20.0,
+        "var": 20.0,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 64.86285,
+        "var": 20.0,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 218.1172,
+        "var": 50.0,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 255.0,
+        "var": 0.0,
+        "dist": 0
+      }
+    ],
+    "PosOffset": [
+      {
+        "offset": 0.0,
+        "avg": 0.0,
+        "var": 0.05,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 0.0,
+        "var": 0.05,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 0.0,
+        "var": 0.05,
+        "dist": 0
+      }
+    ],
+    "RandomVelocityChange": false,
+    "DieOnRainHeightmap": false,
+    "SecondarySpawnInterval": {
+      "offset": 0.0,
+      "avg": 0.0,
+      "var": 0.0,
+      "dist": 0
+    },
+    "Bounciness": 1.0,
+    "DieInAir": false,
+    "DieInLiquid": true,
+    "SwimOnLiquid": false,
+    "ColorByBlock": false,
+    "OpacityEvolve": {
+      "transform": 3,
+      "factor": 250.0
+    },
+    "GravityEffect": {
+      "offset": 0.0,
+      "avg": 0.5,
+      "var": 0.0,
+      "dist": 0
+    },
+    "LifeLength": {
+      "offset": 0.0,
+      "avg": 0.3,
+      "var": 0.0,
+      "dist": 0
+    },
+    "Quantity": {
+      "offset": 0.0,
+      "avg": 20.0,
+      "var": 0.0,
+      "dist": 0
+    },
+    "Size": {
+      "offset": 0.0,
+      "avg": 0.1,
+      "var": 0.1,
+      "dist": 0
+    },
+    "Velocity": [
+      {
+        "offset": 0.0,
+        "avg": 0.0,
+        "var": 1.0,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 0.5,
+        "var": 0.5,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 0.0,
+        "var": 1.0,
+        "dist": 0
+      }
+    ],
+    "ParticleModel": 1,
+    "VertexFlags": 255,
+    "SelfPropelled": false,
+    "TerrainCollision": true,
+    "WindAffectednes": 0.0
+  },
+  "entity-hit-blood": {
+    "HsvaColor": [
+      {
+        "offset": 0.0,
+        "avg": 0.0,
+        "var": 5.0,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 255.0,
+        "var": 5.0,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 197.76808,
+        "var": 5.0,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 255.0,
+        "var": 0.0,
+        "dist": 0
+      }
+    ],
+    "PosOffset": [
+      {
+        "offset": 0.0,
+        "avg": 0.0,
+        "var": 0.05,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 0.5,
+        "var": 0.05,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 0.0,
+        "var": 0.05,
+        "dist": 0
+      }
+    ],
+    "RandomVelocityChange": false,
+    "DieOnRainHeightmap": false,
+    "SecondarySpawnInterval": {
+      "offset": 0.0,
+      "avg": 0.0,
+      "var": 0.0,
+      "dist": 0
+    },
+    "Bounciness": 0.0,
+    "DieInAir": false,
+    "DieInLiquid": false,
+    "SwimOnLiquid": true,
+    "ColorByBlock": false,
+    "GravityEffect": {
+      "offset": 0.0,
+      "avg": 0.5,
+      "var": 0.1,
+      "dist": 0
+    },
+    "LifeLength": {
+      "offset": 0.0,
+      "avg": 5.0,
+      "var": 0.0,
+      "dist": 0
+    },
+    "Quantity": {
+      "offset": 0.0,
+      "avg": 5.0,
+      "var": 0.0,
+      "dist": 0
+    },
+    "Size": {
+      "offset": 0.0,
+      "avg": 0.3,
+      "var": 0.2,
+      "dist": 0
+    },
+    "Velocity": [
+      {
+        "offset": 0.0,
+        "avg": 0.0,
+        "var": 1.0,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 0.5,
+        "var": 0.5,
+        "dist": 0
+      },
+      {
+        "offset": 0.0,
+        "avg": 0.0,
+        "var": 1.0,
+        "dist": 0
+      }
+    ],
+    "ParticleModel": 0,
+    "VertexFlags": 0,
+    "SelfPropelled": false,
+    "TerrainCollision": true,
+    "WindAffectednes": 0.0
+  }
+}
