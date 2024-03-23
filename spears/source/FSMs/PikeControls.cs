@@ -100,13 +100,14 @@ public abstract class PikeControls
         return StanceType.Shoulder;
     }
     protected bool Attacking(ItemSlot slot) => Fsm.CheckState(slot, 1, "attack");
-    protected void EnsureStance(ItemSlot slot, IPlayer player)
+    protected bool EnsureStance(ItemSlot slot, IPlayer player)
     {
         bool shoulder = Fsm.CheckState(slot, 0, "shoulder");
-        if (player.Entity.LeftHandItemSlot.Empty || shoulder) return;
+        if (player.Entity.LeftHandItemSlot.Empty || shoulder) return true;
 
         Fsm.SetState(slot, (0, "shoulder"));
         OnStanceChange(slot, player, GetStance(slot));
+        return false;
     }
 
     #region FSM
@@ -171,7 +172,7 @@ public abstract class PikeControls
     protected bool StartAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
-        EnsureStance(slot, player);
+        if (!EnsureStance(slot, player)) return false;
         if (!CanAttack(player)) return false;
         if (OnStartAttack(slot, player, GetStance(slot)))
         {
@@ -183,7 +184,7 @@ public abstract class PikeControls
     [InputHandler(state: "*-attack", "LeftMouseUp", "InterruptAction")]
     protected bool CancelAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine(input);
+        Console.WriteLine($"InterruptAction: {input}");
         if (player == null) return false;
         Fsm.SetState(slot, (1, "idle"));
         OnCancelAttack(slot, player, GetStance(slot));

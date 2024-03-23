@@ -148,7 +148,7 @@ public class PikeFsm : PikeControls
         if (headDamage != null) damageTypes.Add(headDamage);
         if (shaftDamage != null) damageTypes.Add(shaftDamage);
 
-        return new MeleeAttack(api as ICoreClientAPI, hitWindow, damageTypes, stats.MaxReach);
+        return new MeleeAttack(api as ICoreClientAPI, TimeSpan.FromMilliseconds(stats.AttackDurationMs), damageTypes, stats.MaxReach);
     }
     private MeleeAttackDamageType? GetAttackDamageType(SpearAnimationSystem.AnimationType attackType, PikeStats stats)
     {
@@ -252,6 +252,7 @@ public sealed class PikeStats
     public float Knockback { get; set; }
     public float Stagger { get; set; } = 1.0f;
     public int Tier { get; set; }
+    public float AttackDurationMs { get; set; }
     public float[] HeadCollider { get; set; } = new float[6];
     public float[] ShaftCollider { get; set; } = new float[6];
     public string? HeadHitTerrainSound { get; set; } = null;

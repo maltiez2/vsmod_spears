@@ -13,7 +13,7 @@
       }
     }
   ],
-  "variantgroups": [{"code": "type", "states": ["plain"]}, {"code": "material", "states": ["iron", "steel"]}],
+  "variantgroups": [{"code": "type", "states": ["plain"]}, {"code": "material", "states": ["tinbronze", "bismuthbronze", "blackbronze", "iron", "steel"]}],
   "damagedby": ["attacking"],
   "tool": "spear",
   "shape": {"base": "weapons/pike-{material}-{type}"},
@@ -33,13 +33,15 @@
     "pikeStats": {
       "MaxReach": 8,
       "Damage": 5,
-      "ShaftDamage": 1,
+      "ShaftDamage": 0,
       "Knockback": 2,
-      "Stagger": 0.1,
+      "Stagger": 0,
       "Tier": 5,
-      "HeadCollider": [0, 0, -3.5, 0, 0, -4],
-      "ShaftCollider": [0, 0, 0.8, 0, 0, -3.5],
-      "HeadHitTerrainSound": "game:sounds/effect/anvilhit3",
+      "HeadCollider": [0, 0, -4.5, 0, 0, -5],
+      "ShaftCollider": [0, 0, 0.8, 0, 0, -4.5],
+      "HeadHitTerrainSound": "game:sounds/effect/crusher-impact3",
+      "ShaftHitTerrainSound": "game:sounds/effect/stonecrush",
+      "ShaftHitEntitySound": "game:sounds/effect/shieldblock",
       "AttackWindowMs": [500, 1300]
     }
   },
