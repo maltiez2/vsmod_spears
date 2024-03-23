@@ -31,6 +31,8 @@ public abstract class BaseControls
         GripChange = new(api, "grip", collectible, Vintagestory.API.Client.GlKeys.F);
         ItemDropped = new(api, "dropped", collectible, ISlotContentInput.SlotEventType.AllTaken);
         SlotDeselected = new(api, "deselected", collectible);
+        ItemAdded = new(api, "dropped", collectible, ISlotContentInput.SlotEventType.AfterModified);
+        SlotDeselected = new(api, "deselected", collectible, ISlotInput.SlotEventType.ToSlot);
 
         Fsm.Init(this, collectible);
     }
@@ -44,6 +46,10 @@ public abstract class BaseControls
     };
 
     protected virtual void OnDeselected(ItemSlot slot, IPlayer player)
+    {
+
+    }
+    protected virtual void OnSelected(ItemSlot slot, IPlayer player)
     {
 
     }
@@ -147,6 +153,10 @@ public abstract class BaseControls
     protected SlotContent ItemDropped { get; }
     [Input]
     protected BeforeSlotChanged SlotDeselected { get; }
+    [Input]
+    protected SlotContent ItemAdded { get; }
+    [Input]
+    protected AfterSlotChanged SlotSelected { get; }
 
     [InputHandler(state: "*-*-*", "ItemDropped", "SlotDeselected")]
     protected bool Deselected(ItemSlot slot, IPlayer? player, IInput input, IState state)
@@ -154,6 +164,14 @@ public abstract class BaseControls
         if (player == null) return false;
         Fsm.SetState(slot, "onehanded-lower-idle");
         OnDeselected(slot, player);
+        return false;
+    }
+    [InputHandler(state: "*-*-*", "ItemAdded", "SlotSelected")]
+    protected bool Selected(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    {
+        if (player == null) return false;
+        Fsm.SetState(slot, "onehanded-lower-idle");
+        OnSelected(slot, player);
         return false;
     }
 

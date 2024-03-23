@@ -92,6 +92,11 @@ public class SpearFsm : BaseControls
         Console.WriteLine($"OnDeselected");
         AnimationSystem?.EaseOut(player, _easeOutTime);
     }
+    protected override void OnSelected(ItemSlot slot, IPlayer player)
+    {
+        Console.WriteLine($"OnSelected");
+        AnimationSystem?.Play(player, GetStanceAnimationType(StanceType.OneHandedLower));
+    }
 
     protected virtual bool OnTerrainHit(ItemSlot slot, IPlayer player, bool blocking)
     {
