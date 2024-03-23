@@ -58,12 +58,17 @@ public class SpearFsm : BaseControls
     {
         Console.WriteLine($"OnStartAttack: {stanceType} (blocking: {blocking})");
         _lastAttack = GetAttackAnimationType(stanceType, blocking);
-        AttacksSystem?.Start(GetAttackAnimationType(stanceType, blocking), player, slot, terrainCollisionCallback: () => OnTerrainHit(slot, player, blocking));
+        AttacksSystem?.Start(GetAttackAnimationType(stanceType, blocking), player, slot, () => OnAttackFinished(slot, player, stanceType, blocking), terrainCollisionCallback: () => OnTerrainHit(slot, player, blocking));
         return true;
+    }
+    protected virtual void OnAttackFinished(ItemSlot slot, IPlayer player, StanceType stanceType, bool blocking)
+    {
+        Console.WriteLine($"OnAttackFinished: {stanceType}");
+        CancelAttack(slot, player, blocking);
     }
     protected override void OnCancelAttack(ItemSlot slot, IPlayer player, StanceType stanceType, bool blocking)
     {
-        AttacksSystem?.Stop(GetAttackAnimationType(stanceType, blocking), player, _easeOutTime);
+        AnimationSystem?.Play(player, GetStanceAnimationType(stanceType));
         Console.WriteLine($"OnCancelAttack: {stanceType}");
     }
     protected override bool OnStartBlock(ItemSlot slot, IPlayer player, StanceType stanceType, bool attacking)
@@ -75,7 +80,7 @@ public class SpearFsm : BaseControls
     protected override void OnCancelBlock(ItemSlot slot, IPlayer player, StanceType stanceType, bool attacking)
     {
         Console.WriteLine($"OnCancelBlock: {stanceType}");
-        AnimationSystem?.EaseOut(player, GetBlockAnimationType(stanceType), _easeOutTime);
+        AnimationSystem?.Play(player, GetStanceAnimationType(stanceType));
     }
     protected override void OnStanceChange(ItemSlot slot, IPlayer player, StanceType newStance, bool blocking)
     {
@@ -91,7 +96,7 @@ public class SpearFsm : BaseControls
     protected virtual bool OnTerrainHit(ItemSlot slot, IPlayer player, bool blocking)
     {
         CancelAttack(slot, player, blocking);
-        return false;
+        return true;
     }
 
     private readonly TimeSpan _easeOutTime = TimeSpan.FromSeconds(0.6);
@@ -268,14 +273,14 @@ public class SpearFsm : BaseControls
 
         return animationType switch
         {
-            SpearAnimationSystem.AnimationType.Low1hAttack => new(
-                "spear-high-2h-attack",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(200), 10, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 15, ProgressModifierType.Cubic),
-                RunParameters.EaseOut(TimeSpan.FromMilliseconds(1000), ProgressModifierType.Bounce)
-                ),
+            SpearAnimationSystem.AnimationType.Low1hAttack => empty,
             SpearAnimationSystem.AnimationType.High1hAttack => empty,
-            SpearAnimationSystem.AnimationType.Low2hAttack => empty,
+            SpearAnimationSystem.AnimationType.Low2hAttack => new(
+                "spear-low-2h-attack",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(200), 10, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(200), 15, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 10, ProgressModifierType.Bounce)
+                ),
             SpearAnimationSystem.AnimationType.High2hAttack => empty,
             SpearAnimationSystem.AnimationType.Low1hBlockAttack => empty,
             SpearAnimationSystem.AnimationType.High1hBlockAttack => empty,
@@ -287,7 +292,11 @@ public class SpearFsm : BaseControls
             SpearAnimationSystem.AnimationType.High2hBlock => empty,
             SpearAnimationSystem.AnimationType.Low1hStance => empty,
             SpearAnimationSystem.AnimationType.High1hStance => empty,
-            SpearAnimationSystem.AnimationType.Low2hStance => empty,
+            SpearAnimationSystem.AnimationType.Low2hStance => new(
+                "spear-low-2h-attack",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 25, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 0, ProgressModifierType.Bounce)
+                ),
             SpearAnimationSystem.AnimationType.High2hStance => empty,
             _ => throw new NotImplementedException()
         };

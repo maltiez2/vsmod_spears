@@ -22,14 +22,16 @@
           "frame": 0,
           "elements": {
             "UpperTorso": {"offsetX": 0.4, "offsetY": -0.5, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": -30},
-            "UpperArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": -60}
+            "UpperArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": -60},
+            "UpperArmL": {"rotationX": 0, "rotationY": 0, "rotationZ": -60}
           }
         },
         {
           "frame": 180,
           "elements": {
             "UpperTorso": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 30},
-            "UpperArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": 60}
+            "UpperArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": 60},
+            "UpperArmL": {"rotationX": 0, "rotationY": 0, "rotationZ": 60}
           }
         }
       ]
@@ -53,30 +55,7 @@
       "quantityframes": 181,
       "onActivityStopped": "EaseOut",
       "onAnimationEnd": "Hold",
-      "keyframes": [
-        {
-          "frame": 0,
-          "elements": {
-            "UpperTorso": {"offsetX": 0.4, "offsetY": -0.5, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": -30},
-            "UpperArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": -60},
-            "Neck": {"rotationX": 0, "rotationY": 0, "rotationZ": -30},
-            "Head": {"rotationX": 0, "rotationY": 0, "rotationZ": -30},
-            "Ponytail1": {"rotationX": 0, "rotationY": 0, "rotationZ": 57},
-            "Ponytail 2": {"rotationX": 0, "rotationY": 0, "rotationZ": -5}
-          }
-        },
-        {
-          "frame": 180,
-          "elements": {
-            "UpperTorso": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 30},
-            "UpperArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": 60},
-            "Neck": {"rotationX": 0, "rotationY": 0, "rotationZ": 30},
-            "Head": {"rotationX": 0, "rotationY": 0, "rotationZ": 30},
-            "Ponytail1": {"rotationX": 0, "rotationY": 0, "rotationZ": -8},
-            "Ponytail 2": {"rotationX": 0, "rotationY": 0, "rotationZ": -6}
-          }
-        }
-      ]
+      "keyframes": [{"frame": 0, "elements": {}}, {"frame": 180, "elements": {}}]
     }
   }
 ]

@@ -51,9 +51,9 @@ public sealed class SpearAnimationSystem : BaseSystem
             HandsFpCode = $"{code}-hands-fp";
             LegsFpCode = $"{code}-legs-fp";
             HandsTp = new("hands", $"{HandsTpCode}-{id}", EnumAnimationBlendMode.Average, weight: 512);
-            LegsTp = new("hands", $"{LegsTpCode}-{id}", EnumAnimationBlendMode.Average, weight: 1);
+            LegsTp = new("legs", $"{LegsTpCode}-{id}", EnumAnimationBlendMode.AddAverage, weight: 0);
             HandsFp = new("hands", $"{HandsFpCode}-{id}", EnumAnimationBlendMode.Average, weight: 512);
-            LegsFp = new("hands", $"{LegsFpCode}-{id}", EnumAnimationBlendMode.Average, weight: 1);
+            LegsFp = new("legs", $"{LegsFpCode}-{id}", EnumAnimationBlendMode.AddAverage, weight: 0);
             Parameters = parameters;
         }
 
@@ -68,6 +68,9 @@ public sealed class SpearAnimationSystem : BaseSystem
         _animationSystem.Register(_verticalTrackingAnimation, AnimationData.Player("spears-vertical-tracking"));
     }
 
+
+    public bool TpTracking { get; set; } = false;
+
     public void Track(IClientPlayer byPlayer, float trackingFactor = 0.8f)
     {
         float angle = byPlayer.CameraPitch * GameMath.RAD2DEG - 180;
@@ -78,7 +81,7 @@ public sealed class SpearAnimationSystem : BaseSystem
             RunParameters.EaseOut(TimeSpan.FromSeconds(1))
             );
 
-        _animationSystem.Run(new AnimationTarget(byPlayer.Entity.EntityId, AnimationTargetType.EntityThirdPerson), sequence);
+        if (TpTracking) _animationSystem.Run(new AnimationTarget(byPlayer.Entity.EntityId, AnimationTargetType.EntityThirdPerson), sequence);
 
         if (byPlayer == _clientApi.World.Player && _clientApi.Settings.Bool["immersiveFpMode"])
         {
@@ -160,16 +163,16 @@ public sealed class SpearAttacksSystem : BaseSystem
         _meleeSystem = new(api, $"melee-{debugName}");
         _animationSystem = animations;
     }
-    public void Start(SpearAnimationSystem.AnimationType attackType, IPlayer player, ItemSlot slot, System.Func<bool>? terrainCollisionCallback = null, System.Func<bool>? entityCollisionCallback = null)
+    public void Start(SpearAnimationSystem.AnimationType attackType, IPlayer player, ItemSlot slot, Action attackFinishedCallback, System.Func<bool>? terrainCollisionCallback = null, System.Func<bool>? entityCollisionCallback = null)
     {
         _animationSystem?.Play(player, attackType);
         if (_side == EnumAppSide.Client)
         {
-            _meleeSystem.StartClientSide((long)attackType, player, _attacks[attackType], slot, result => AttackResultHandler(result, attackType, terrainCollisionCallback, entityCollisionCallback));
+            _meleeSystem.StartClientSide((long)attackType, player, _attacks[attackType], slot, result => AttackResultHandler(result, attackType, attackFinishedCallback, terrainCollisionCallback, entityCollisionCallback));
         }
         else
         {
-            _meleeSystem.StartServerSide((long)attackType, player, _attacks[attackType], result => AttackResultHandler(result, attackType, terrainCollisionCallback, entityCollisionCallback));
+            _meleeSystem.StartServerSide((long)attackType, player, _attacks[attackType], result => AttackResultHandler(result, attackType, attackFinishedCallback, terrainCollisionCallback, entityCollisionCallback));
         }
     }
     public void Stop(SpearAnimationSystem.AnimationType attackType, IPlayer player, TimeSpan? duration = null)
@@ -184,8 +187,14 @@ public sealed class SpearAttacksSystem : BaseSystem
     private readonly MeleeSystem _meleeSystem;
     private readonly SpearAnimationSystem? _animationSystem;
 
-    private static bool AttackResultHandler(MeleeAttack.AttackResult result, SpearAnimationSystem.AnimationType attackType, System.Func<bool>? terrainCollisionCallback, System.Func<bool>? entityCollisionCallback)
+    private static bool AttackResultHandler(MeleeAttack.AttackResult result, SpearAnimationSystem.AnimationType attackType, Action attackFinishedCallback, System.Func<bool>? terrainCollisionCallback, System.Func<bool>? entityCollisionCallback)
     {
+        if (result.Result == MeleeAttack.Result.Finished)
+        {
+            attackFinishedCallback?.Invoke();
+            return true;
+        }
+        
         if (result.Terrain != null && result.Terrain.Any() && terrainCollisionCallback?.Invoke() == true)
         {
             return true;
@@ -198,8 +207,14 @@ public sealed class SpearAttacksSystem : BaseSystem
 
         return false;
     }
-    private static bool AttackResultHandler(MeleeCollisionPacket result, SpearAnimationSystem.AnimationType attackType, System.Func<bool>? terrainCollisionCallback, System.Func<bool>? entityCollisionCallback)
+    private static bool AttackResultHandler(MeleeCollisionPacket result, SpearAnimationSystem.AnimationType attackType, Action attackFinishedCallback, System.Func<bool>? terrainCollisionCallback, System.Func<bool>? entityCollisionCallback)
     {
+        if (result.Finished)
+        {
+            attackFinishedCallback?.Invoke();
+            return true;
+        }
+        
         if (result.Blocks.Length > 0 && terrainCollisionCallback?.Invoke() == true)
         {
             return true;

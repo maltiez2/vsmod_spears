@@ -52,8 +52,8 @@
     "op": "add",
     "path": "/animations/-",
     "value": {
-      "name": "spearsempty",
-      "code": "spearsempty",
+      "name": "spearsempty-legs",
+      "code": "spearsempty-legs",
       "easeInSpeed": 1,
       "easeOutSpeed": 1,
       "quantityframes": 1,
@@ -73,8 +73,8 @@
     "op": "add",
     "path": "/animations/-",
     "value": {
-      "name": "spearsempty-fp",
-      "code": "spearsempty-fp",
+      "name": "spearsempty-legs-fp",
+      "code": "spearsempty-legs-fp",
       "easeInSpeed": 1,
       "easeOutSpeed": 1,
       "quantityframes": 1,

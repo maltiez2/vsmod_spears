@@ -3,15 +3,15 @@
     "file": "game:entities/humanoid/player",
     "op": "add",
     "path": "/client/animations/-",
-    "value": {"code": "spear-high-2h-attack-hands", "animation": "spear-high-2h-attack-hands", "animationSpeed": 1, "blendMode": "Add"}
+    "value": {"code": "spear-low-2h-attack-hands", "animation": "spear-low-2h-attack-hands", "animationSpeed": 1, "blendMode": "Add"}
   },
   {
     "file": "game:shapes/entity/humanoid/seraph-faceless",
     "op": "add",
     "path": "/animations/-",
     "value": {
-      "name": "spear-high-2h-attack-hands",
-      "code": "spear-high-2h-attack-hands",
+      "name": "spear-low-2h-attack-hands",
+      "code": "spear-low-2h-attack-hands",
       "easeInSpeed": 1,
       "easeOutSpeed": 1,
       "quantityframes": 2,
@@ -75,15 +75,15 @@
     "file": "game:entities/humanoid/player",
     "op": "add",
     "path": "/client/animations/-",
-    "value": {"code": "spear-high-2h-attack-legs", "animation": "spear-high-2h-attack-legs", "animationSpeed": 1, "blendMode": "Add"}
+    "value": {"code": "spear-low-2h-attack-legs", "animation": "spear-low-2h-attack-legs", "animationSpeed": 1, "blendMode": "Add"}
   },
   {
     "file": "game:shapes/entity/humanoid/seraph-faceless",
     "op": "add",
     "path": "/animations/-",
     "value": {
-      "name": "spear-high-2h-attack-legs",
-      "code": "spear-high-2h-attack-legs",
+      "name": "spear-low-2h-attack-legs",
+      "code": "spear-low-2h-attack-legs",
       "easeInSpeed": 1,
       "easeOutSpeed": 1,
       "quantityframes": 2,
@@ -157,15 +157,15 @@
     "file": "game:entities/humanoid/player",
     "op": "add",
     "path": "/client/animations/-",
-    "value": {"code": "spear-high-2h-attack-hands-fp", "animation": "spear-high-2h-attack-hands-fp", "animationSpeed": 1, "blendMode": "Add"}
+    "value": {"code": "spear-low-2h-attack-hands-fp", "animation": "spear-low-2h-attack-hands-fp", "animationSpeed": 1, "blendMode": "Add"}
   },
   {
     "file": "game:shapes/entity/humanoid/seraph-faceless",
     "op": "add",
     "path": "/animations/-",
     "value": {
-      "name": "spear-high-2h-attack-hands-fp",
-      "code": "spear-high-2h-attack-hands-fp",
+      "name": "spear-low-2h-attack-hands-fp",
+      "code": "spear-low-2h-attack-hands-fp",
       "easeInSpeed": 1,
       "easeOutSpeed": 1,
       "quantityframes": 2,
@@ -229,15 +229,15 @@
     "file": "game:entities/humanoid/player",
     "op": "add",
     "path": "/client/animations/-",
-    "value": {"code": "spear-high-2h-attack-legs-fp", "animation": "spear-high-2h-attack-legs-fp", "animationSpeed": 1, "blendMode": "Add"}
+    "value": {"code": "spear-low-2h-attack-legs-fp", "animation": "spear-low-2h-attack-legs-fp", "animationSpeed": 1, "blendMode": "Add"}
   },
   {
     "file": "game:shapes/entity/humanoid/seraph-faceless",
     "op": "add",
     "path": "/animations/-",
     "value": {
-      "name": "spear-high-2h-attack-legs-fp",
-      "code": "spear-high-2h-attack-legs-fp",
+      "name": "spear-low-2h-attack-legs-fp",
+      "code": "spear-low-2h-attack-legs-fp",
       "easeInSpeed": 1,
       "easeOutSpeed": 1,
       "quantityframes": 2,
