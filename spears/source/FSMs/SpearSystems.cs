@@ -29,7 +29,10 @@ public sealed class SpearAnimationSystem : BaseSystem
         Low1hStance,
         High1hStance,
         Low2hStance,
-        High2hStance
+        High2hStance,
+        Idle1h,
+        Idle2h,
+        Throw
     }
     public readonly struct AnimationParameters
     {

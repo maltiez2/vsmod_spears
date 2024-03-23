@@ -1,6 +1,6 @@
 ﻿{
   "code": "pike",
-  "class": "Spears:SpearItem",
+  "class": "Spears:PikeItem",
   "behaviors": [
     {
       "name": "GroundStorable",
@@ -28,30 +28,24 @@
     "groundStorageTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": 0, "y": 0, "z": 0}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 0.8},
     "damageByType": {"*-iron": 3, "*-steel": 4},
     "spearEntityCode": "spear-{type}-{material}",
-    "handbook": {"groupBy": ["spear-*"]},
+    "handbook": {"groupBy": ["pike-*"]},
     "toolrackTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": 0, "y": 0, "z": 0}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 0.8},
-    "spearStats": {
-      "MaxReach": 6,
-      "OneHandedDamage": 5,
-      "TwoHandedDamage": 5,
+    "pikeStats": {
+      "MaxReach": 8,
+      "Damage": 5,
       "ShaftDamage": 1,
-      "PushKnockback": 3,
-      "ShaftHitKnockback": 1,
-      "TwoHandedKnockback": 1,
-      "OneHandedKnockback": 0,
-      "OneHandedTier": 5,
-      "TwoHandedTier": 5,
-      "SpearHeadCollider": [0, 0, -3.5, 0, 0, -4],
+      "Knockback": 2,
+      "Stagger": 0.1,
+      "Tier": 5,
+      "HeadCollider": [0, 0, -3.5, 0, 0, -4],
       "ShaftCollider": [0, 0, 0.8, 0, 0, -3.5],
       "HeadHitTerrainSound": "game:sounds/effect/anvilhit3",
-      "OneHandedAttackWindowMs": [300, 700],
-      "TwoHandedAttackWindowMs": [300, 700],
-      "PushAttackWindowMs": [300, 700]
+      "AttackWindowMs": [500, 1300]
     }
   },
   "durabilitybytype": {"*-copper": 64, "*-tinbronze": 256, "*-bismuthbronze": 256, "*-blackbronze": 256, "*-iron": 512, "*-steel": 1024},
   "creativeinventory": {"maltiezspears": ["*"]},
   "guiTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": -53, "y": -40, "z": -8}, "origin": {"x": -0.8, "y": 1.2, "z": -2.5}, "scale": 2.31},
   "groundTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": 0, "y": 0, "z": 0}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 4},
-  "tpHandTransform": {"translation": {"x": 0, "y": 0.05, "z": 0.05}, "rotation": {"x": 0, "y": -90, "z": -90}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 0.8}
+  "tpHandTransform": {"translation": {"x": -1, "y": 0.05, "z": 0.05}, "rotation": {"x": 0, "y": -90, "z": -90}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 0.8}
 }

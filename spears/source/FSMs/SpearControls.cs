@@ -7,9 +7,9 @@ using Vintagestory.API.Common;
 
 namespace Spears;
 
-public abstract class BaseControls
+public abstract class SpearControls
 {
-    protected BaseControls(ICoreAPI api, CollectibleObject collectible)
+    protected SpearControls(ICoreAPI api, CollectibleObject collectible)
     {
         Console.WriteLine("Init BaseControls");
 
@@ -32,7 +32,7 @@ public abstract class BaseControls
         ItemDropped = new(api, "dropped", collectible, ISlotContentInput.SlotEventType.AllTaken);
         SlotDeselected = new(api, "deselected", collectible);
         ItemAdded = new(api, "dropped", collectible, ISlotContentInput.SlotEventType.AfterModified);
-        SlotDeselected = new(api, "deselected", collectible, ISlotInput.SlotEventType.ToSlot);
+        SlotSelected = new(api, "deselected", collectible, ISlotInput.SlotEventType.ToSlot);
 
         Fsm.Init(this, collectible);
     }
@@ -108,7 +108,7 @@ public abstract class BaseControls
     protected void EnsureStance(ItemSlot slot, IPlayer player)
     {
         bool onehanded = Fsm.CheckState(slot, 0, "onehanded");
-        if (player.Entity.LeftHandItemSlot.Empty || !onehanded) return;
+        if (player.Entity.LeftHandItemSlot.Empty || onehanded) return;
         
         Fsm.SetState(slot, (0, "onehanded"));
         OnStanceChange(slot, player, GetStance(slot), Blocking(slot));

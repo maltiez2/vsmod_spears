@@ -1,0 +1,222 @@
+﻿[
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "pike-stances-legs", "animation": "pike-stances-legs", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "pike-stances-legs",
+      "code": "pike-stances-legs",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 3,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "LowerTorso": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperTorso": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "Neck": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "LowerTorso": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperTorso": {"rotationX": 0, "rotationY": -5, "rotationZ": 0},
+            "Neck": {"rotationX": 0, "rotationY": 5, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}
+          }
+        },
+        {
+          "frame": 2,
+          "elements": {
+            "LowerTorso": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperTorso": {"rotationX": 0, "rotationY": -30, "rotationZ": 0},
+            "Neck": {"rotationX": -3, "rotationY": 28, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}
+          }
+        }
+      ]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "pike-stances-hands", "animation": "pike-stances-hands", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "pike-stances-hands",
+      "code": "pike-stances-hands",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 3,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "UpperArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": 6},
+            "LowerArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": -102},
+            "ItemAnchor": {"offsetX": 16, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 1, "rotationZ": -31},
+            "UpperArmL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerArmL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "UpperArmR": {"rotationX": 0, "rotationY": 15, "rotationZ": 47},
+            "LowerArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": -80},
+            "ItemAnchor": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 37},
+            "UpperArmL": {"rotationX": 0, "rotationY": -43, "rotationZ": -52},
+            "LowerArmL": {"rotationX": 23, "rotationY": 0, "rotationZ": 0}
+          }
+        },
+        {
+          "frame": 2,
+          "elements": {
+            "UpperArmR": {"rotationX": 45, "rotationY": 0, "rotationZ": 0},
+            "LowerArmR": {"rotationX": 120, "rotationY": 0, "rotationZ": 0},
+            "ItemAnchor": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": -41, "rotationZ": -7},
+            "UpperArmL": {"rotationX": 0, "rotationY": -28, "rotationZ": -82},
+            "LowerArmL": {"rotationX": 21, "rotationY": 0, "rotationZ": -63}
+          }
+        }
+      ]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "pike-stances-legs-fp", "animation": "pike-stances-legs-fp", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "pike-stances-legs-fp",
+      "code": "pike-stances-legs-fp",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 3,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "LowerTorso": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperTorso": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "Neck": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "LowerTorso": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperTorso": {"rotationX": 0, "rotationY": -5, "rotationZ": 0},
+            "Neck": {"rotationX": 0, "rotationY": 5, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}
+          }
+        },
+        {
+          "frame": 2,
+          "elements": {
+            "LowerTorso": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperTorso": {"rotationX": 0, "rotationY": -30, "rotationZ": 0},
+            "Neck": {"rotationX": -3, "rotationY": 28, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}
+          }
+        }
+      ]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "pike-stances-hands-fp", "animation": "pike-stances-hands-fp", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "pike-stances-hands-fp",
+      "code": "pike-stances-hands-fp",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 3,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "UpperArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": 6},
+            "LowerArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": -102},
+            "ItemAnchor": {"offsetX": 16, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 1, "rotationZ": -31},
+            "UpperArmL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "LowerArmL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "UpperArmR": {"rotationX": 0, "rotationY": 15, "rotationZ": 47},
+            "LowerArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": -80},
+            "ItemAnchor": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 37},
+            "UpperArmL": {"rotationX": 0, "rotationY": -43, "rotationZ": -52},
+            "LowerArmL": {"rotationX": 23, "rotationY": 0, "rotationZ": 0}
+          }
+        },
+        {
+          "frame": 2,
+          "elements": {
+            "UpperArmR": {"rotationX": 45, "rotationY": 0, "rotationZ": 0},
+            "LowerArmR": {"rotationX": 120, "rotationY": 0, "rotationZ": 0},
+            "ItemAnchor": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": -41, "rotationZ": -7},
+            "UpperArmL": {"rotationX": 0, "rotationY": -28, "rotationZ": -82},
+            "LowerArmL": {"rotationX": 21, "rotationY": 0, "rotationZ": -63}
+          }
+        }
+      ]
+    }
+  }
+]

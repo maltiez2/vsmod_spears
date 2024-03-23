@@ -9,7 +9,7 @@ using Vintagestory.API.Common;
 
 namespace Spears;
 
-public class SpearFsm : BaseControls
+public class SpearFsm : SpearControls
 {
     public SpearFsm(ICoreAPI api, CollectibleObject collectible, SpearStats stats) : base(api, collectible)
     {
@@ -261,14 +261,14 @@ public class SpearFsm : BaseControls
         Dictionary<SpearAnimationSystem.AnimationType, List<SpearAnimationSystem.AnimationParameters>> result = new();
 
         SpearAnimationSystem.AnimationType[] animationTypes = Enum.GetValues<SpearAnimationSystem.AnimationType>();
-        foreach ((SpearAnimationSystem.AnimationType type, SpearAnimationSystem.AnimationParameters parameters) in animationTypes.Select(type => (type, GetAnimation(type))))
+        foreach ((SpearAnimationSystem.AnimationType type, SpearAnimationSystem.AnimationParameters? parameters) in animationTypes.Select(type => (type, GetAnimation(type))))
         {
-            result.Add(type, new() { parameters });
+            if (parameters != null) result.Add(type, new() { parameters.Value });
         }
 
         return result;
     }
-    private static SpearAnimationSystem.AnimationParameters GetAnimation(SpearAnimationSystem.AnimationType animationType)
+    private static SpearAnimationSystem.AnimationParameters? GetAnimation(SpearAnimationSystem.AnimationType animationType)
     {
         SpearAnimationSystem.AnimationParameters empty = new(
             "spearsempty",
@@ -303,7 +303,7 @@ public class SpearFsm : BaseControls
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.High2hStance => empty,
-            _ => throw new NotImplementedException()
+            _ => null
         };
     }
 }
