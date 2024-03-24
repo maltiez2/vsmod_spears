@@ -3,6 +3,30 @@
     "file": "game:entities/humanoid/player",
     "op": "add",
     "path": "/client/animations/-",
+    "value": {"code": "pike-grip", "animation": "pike-grip", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "pike-grip",
+      "code": "pike-grip",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 101,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {"frame": 0, "elements": {"ItemAnchor": {"offsetX": 0, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0}}},
+        {"frame": 100, "elements": {"ItemAnchor": {"offsetX": 50, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0}}}
+      ]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
     "value": {"code": "pike-stances-legs", "animation": "pike-stances-legs", "animationSpeed": 1, "blendMode": "Add"}
   },
   {

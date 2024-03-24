@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.MathTools;
 
 namespace Spears;
 
@@ -13,8 +14,6 @@ public class PikeFsm : PikeControls
 {
     public PikeFsm(ICoreAPI api, CollectibleObject collectible, PikeStats stats) : base(api, collectible)
     {
-        Console.WriteLine("Init PikeFsm");
-
         if (api is ICoreClientAPI clientApi)
         {
             AnimationSystem = new(clientApi, debugName: "pike-animations");
@@ -24,11 +23,18 @@ public class PikeFsm : PikeControls
             AnimationSystem.RegisterAnimations(GetAnimations());
 
             MaltiezFSM.Systems.IParticleEffectsManager? effectsManager = api.ModLoader.GetModSystem<FiniteStateMachineSystem>().ParticleEffects;
-            AdvancedParticleProperties? entityHit = effectsManager?.Get("entity-hit-blood", "maltiezspears");
-            AdvancedParticleProperties? terrainHit = effectsManager?.Get("terrain-hit-sparks", "maltiezspears");
+            AdvancedParticleProperties? entityHitSuccess = effectsManager?.Get("entity-hit-success", "maltiezspears");
+            AdvancedParticleProperties? entityHitFail = effectsManager?.Get("entity-hit-fail", "maltiezspears");
+            AdvancedParticleProperties? terrainHitFail = effectsManager?.Get("terrain-hit-fail", "maltiezspears");
 
-            if (terrainHit != null) _terrainHitEffects.Add("*stone*", terrainHit);
-            if (entityHit != null) _entityHitEffects.Add("*", entityHit);
+            if (terrainHitFail != null) _headCollisionEffects.TerrainCollisionParticles.Add("*", (terrainHitFail, 0));
+            if (terrainHitFail != null) _shaftCollisionEffects.TerrainCollisionParticles.Add("*", (terrainHitFail, 0));
+            if (entityHitSuccess != null) _headCollisionEffects.EntityCollisionParticles.Add("*", (entityHitSuccess, 0));
+            if (entityHitFail != null) _shaftCollisionEffects.EntityCollisionParticles.Add("*", (entityHitFail, 0));
+
+            if (stats.ShaftHitTerrainSound != null) _shaftCollisionEffects.TerrainCollisionSounds.Add("*", new(stats.ShaftHitTerrainSound));
+            if (stats.HeadHitTerrainSound != null) _headCollisionEffects.TerrainCollisionSounds.Add("*", new(stats.HeadHitTerrainSound));
+            if (stats.ShaftHitEntitySound != null) _shaftCollisionEffects.EntityCollisionSounds.Add("*", new(stats.ShaftHitEntitySound));
         }
         else
         {
@@ -36,6 +42,19 @@ public class PikeFsm : PikeControls
         }
 
         Stats = stats;
+    }
+
+    public bool ChangeGrip(ItemSlot slot, IPlayer player, float delta)
+    {
+        if (GetStance(slot) == StanceType.Shoulder)
+        {
+            AnimationSystem?.ResetGrip(player);
+            Grip = 0;
+            return false;
+        }
+        Grip = GameMath.Clamp(Grip + delta * GripFactor, 0, 1);
+        AnimationSystem?.SetGrip(player, Grip);
+        return true;
     }
 
     private Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack>? _attacksForDebugRendering;
@@ -50,52 +69,67 @@ public class PikeFsm : PikeControls
         }
     }
 
+    protected const float GripFactor = 0.1f;
+    protected float Grip = 0;
     protected readonly SpearAnimationSystem? AnimationSystem;
     protected readonly SpearAttacksSystem? AttacksSystem;
     protected readonly PikeStats Stats;
 
     protected override bool OnStartAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
-        Console.WriteLine($"OnStartAttack: {stanceType}");
         _lastAttack = GetAttackAnimationType(stanceType);
-        AttacksSystem?.Start(GetAttackAnimationType(stanceType), player, slot, () => OnAttackFinished(slot, player, stanceType), terrainCollisionCallback: () => OnTerrainHit(slot, player));
+        AttacksSystem?.Start(
+            GetAttackAnimationType(stanceType),
+            player,
+            slot,
+            attackFinishedCallback: () => OnAttackFinished(slot, player, stanceType),
+            terrainCollisionCallback: () => OnTerrainHit(slot, player),
+            entityCollisionCallback: () => OnEntityHit(slot, player));
         return true;
     }
     protected virtual void OnAttackFinished(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
-        Console.WriteLine($"OnAttackFinished: {stanceType}");
         CancelAttack(slot, player);
     }
     protected override void OnCancelAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         AnimationSystem?.Play(player, GetStanceAnimationType(stanceType));
-        Console.WriteLine($"OnCancelAttack: {stanceType}");
     }
     protected override void OnStanceChange(ItemSlot slot, IPlayer player, StanceType newStance)
     {
-        Console.WriteLine($"OnStanceChange: {newStance}");
+        if (newStance == StanceType.Shoulder)
+        {
+            AnimationSystem?.ResetGrip(player, TimeSpan.FromSeconds(0.5));
+            Grip = 0;
+        }
         AnimationSystem?.Play(player, GetStanceAnimationType(newStance));
     }
     protected override void OnDeselected(ItemSlot slot, IPlayer player)
     {
-        Console.WriteLine($"OnDeselected");
         AnimationSystem?.EaseOut(player, _easeOutTime);
+        AnimationSystem?.ResetGrip(player);
+        Grip = 0;
     }
     protected override void OnSelected(ItemSlot slot, IPlayer player)
     {
-        Console.WriteLine($"OnSelected");
         AnimationSystem?.Play(player, GetStanceAnimationType(StanceType.Shoulder));
     }
 
+    protected virtual bool OnEntityHit(ItemSlot slot, IPlayer player)
+    {
+        slot.Itemstack.Item.DamageItem(player.Entity.World, player.Entity, slot, 1);
+        return false;
+    }
     protected virtual bool OnTerrainHit(ItemSlot slot, IPlayer player)
     {
         CancelAttack(slot, player);
+        slot.Itemstack.Item.DamageItem(player.Entity.World, player.Entity, slot, 1);
         return true;
     }
 
     private readonly TimeSpan _easeOutTime = TimeSpan.FromSeconds(0.6);
-    private readonly Dictionary<string, AdvancedParticleProperties> _terrainHitEffects = new();
-    private readonly Dictionary<string, AdvancedParticleProperties> _entityHitEffects = new();
+    private readonly CollisionEffects _headCollisionEffects = new();
+    private readonly CollisionEffects _shaftCollisionEffects = new();
 
     private static SpearAnimationSystem.AnimationType GetAttackAnimationType(StanceType stance)
     {
@@ -131,17 +165,6 @@ public class PikeFsm : PikeControls
     }
     private MeleeAttack? GetAttack(SpearAnimationSystem.AnimationType attackType, PikeStats stats, ICoreAPI api)
     {
-        HitWindow hitWindow;
-
-        switch (attackType)
-        {
-            case SpearAnimationSystem.AnimationType.High2hAttack:
-            case SpearAnimationSystem.AnimationType.Low2hAttack:
-                hitWindow = new(TimeSpan.FromMilliseconds(stats.AttackWindowMs[0]), TimeSpan.FromMilliseconds(stats.AttackWindowMs[1]));
-                break;
-            default: return null;
-        }
-
         List<MeleeAttackDamageType> damageTypes = new();
         MeleeAttackDamageType? headDamage = GetAttackDamageType(attackType, stats);
         MeleeAttackDamageType? shaftDamage = GetShaftDamageType(attackType, stats);
@@ -161,19 +184,15 @@ public class PikeFsm : PikeControls
                         damageType: EnumDamageType.PiercingAttack,
                         collider: new(stats.HeadCollider),
                         tier: stats.Tier,
-                        hitSound: stats.HeadHitEntitySound != null ? new(stats.HeadHitEntitySound) : null,
-                        terrainSound: stats.HeadHitTerrainSound != null ? new(stats.HeadHitTerrainSound) : null,
+                        hitWindow: new(stats.AttackWindowMs[0] / stats.AttackDurationMs, stats.AttackWindowMs[1] / stats.AttackDurationMs),
                         knockback: stats.Knockback,
-                        stagger: stats.Stagger
-                    )
-                {
-                    TerrainCollisionParticles = _terrainHitEffects,
-                    EntityCollisionParticles = _entityHitEffects
-                };
+                        stagger: stats.Stagger,
+                        effects: _headCollisionEffects
+                    );
             default: return null;
         }
     }
-    private static MeleeAttackDamageType? GetShaftDamageType(SpearAnimationSystem.AnimationType attackType, PikeStats stats)
+    private MeleeAttackDamageType? GetShaftDamageType(SpearAnimationSystem.AnimationType attackType, PikeStats stats)
     {
         switch (attackType)
         {
@@ -184,9 +203,9 @@ public class PikeFsm : PikeControls
                         damageType: EnumDamageType.BluntAttack,
                         collider: new(stats.ShaftCollider),
                         tier: 0,
-                        hitSound: stats.ShaftHitEntitySound != null ? new(stats.ShaftHitEntitySound) : null,
-                        terrainSound: stats.ShaftHitTerrainSound != null ? new(stats.ShaftHitTerrainSound) : null,
-                        knockback: stats.ShaftHitKnockback
+                        hitWindow: new(stats.ShaftCollisionWindowMs[0] / stats.AttackDurationMs, stats.ShaftCollisionWindowMs[1] / stats.AttackDurationMs),
+                        knockback: stats.ShaftHitKnockback,
+                        effects: _shaftCollisionEffects
                     );
             default: return null;
         }
@@ -260,4 +279,5 @@ public sealed class PikeStats
     public string? ShaftHitTerrainSound { get; set; } = null;
     public string? ShaftHitEntitySound { get; set; } = null;
     public float[] AttackWindowMs { get; set; } = new float[2];
+    public float[] ShaftCollisionWindowMs { get; set; } = new float[2];
 }

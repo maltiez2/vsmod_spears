@@ -11,8 +11,6 @@ public abstract class SpearControls
 {
     protected SpearControls(ICoreAPI api, CollectibleObject collectible)
     {
-        Console.WriteLine("Init BaseControls");
-
         Fsm = new FiniteStateMachineAttributesBased(api, States, "onehanded-lower-idle");
 
         BaseInputProperties inputProperties = new()

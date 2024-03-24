@@ -9,18 +9,18 @@
 	"textureSizes": {
 	},
 	"textures": {
-		"tinbronze": "block/metal/plate/tinbronze",
-		"iron4": "block/metal/sheet/iron4",
-		"temporal": "item/resource/temporalgear",
-		"redwood": "item/tool/material/redwood",
-		"string": "item/tool/material/string"
+		"tinbronze": "game:block/metal/plate/tinbronze",
+		"iron4": "game:block/metal/sheet/iron4",
+		"temporal": "game:item/resource/temporalgear",
+		"redwood": "game:item/tool/material/redwood",
+		"string": "game:item/tool/material/string"
 	},
 	"elements": [
 		{
 			"name": "Spear",
-			"from": [ 6.0, 1.2, -22.3 ],
-			"to": [ 6.0, 1.2, -22.3 ],
-			"rotationOrigin": [ 0.0, 0.7, -22.0 ],
+			"from": [ 5.2, 0.4, -22.3 ],
+			"to": [ 5.2, 0.4, -22.3 ],
+			"rotationOrigin": [ -0.8, -0.1, -22.0 ],
 			"rotationX": 90.0,
 			"rotationZ": -90.0,
 			"faces": {

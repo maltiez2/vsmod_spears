@@ -1,12 +1,14 @@
 ﻿using AnimationManagerLib;
 using AnimationManagerLib.API;
 using MaltiezFSM.Framework.Simplified.Systems;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 
 namespace Spears;
 
@@ -67,13 +69,38 @@ public sealed class SpearAnimationSystem : BaseSystem
     {
         _clientApi = api;
         _animationSystem = api.ModLoader.GetModSystem<AnimationManagerLibSystem>();
+        
         _verticalTrackingAnimation = new("tracking", "spears-vertical-tracking", EnumAnimationBlendMode.AddAverage, weight: 1);
         _animationSystem.Register(_verticalTrackingAnimation, AnimationData.Player("spears-vertical-tracking"));
-    }
 
+        _gripAnimation = new("grip", "pike-grip", EnumAnimationBlendMode.AddAverage, weight: 1);
+        _animationSystem.Register(_gripAnimation, AnimationData.Player("pike-grip"));
+    }
 
     public bool TpTracking { get; set; } = false;
 
+    public void SetGrip(IPlayer player, float value)
+    {
+        float frame = value * 100f;
+
+        AnimationSequence sequence = new(
+            _gripAnimation,
+            RunParameters.Set(frame)
+        );
+
+        _animationSystem.Run(new AnimationTarget(player.Entity.EntityId, AnimationTargetType.EntityThirdPerson), sequence);
+        _animationSystem.Run(new AnimationTarget(player.Entity.EntityId, AnimationTargetType.EntityFirstPerson), sequence, synchronize: false);
+    }
+    public void ResetGrip(IPlayer player, TimeSpan? duration = null)
+    {
+        AnimationSequence sequence = new(
+            _gripAnimation,
+            RunParameters.EaseOut(duration ?? TimeSpan.FromSeconds(1))
+            );
+
+        _animationSystem.Run(new AnimationTarget(player.Entity.EntityId, AnimationTargetType.EntityThirdPerson), sequence);
+        _animationSystem.Run(new AnimationTarget(player.Entity.EntityId, AnimationTargetType.EntityFirstPerson), sequence, synchronize: false);
+    }
     public void Track(IClientPlayer byPlayer, float trackingFactor = 0.8f)
     {
         float angle = byPlayer.CameraPitch * GameMath.RAD2DEG - 180;
@@ -150,6 +177,7 @@ public sealed class SpearAnimationSystem : BaseSystem
     private readonly ICoreClientAPI _clientApi;
     private readonly IAnimationManagerSystem _animationSystem;
     private readonly AnimationId _verticalTrackingAnimation;
+    private readonly AnimationId _gripAnimation;
     private readonly static Random _rand = new();
     private Dictionary<AnimationType, List<AnimationParameters>> _animations = new();
 

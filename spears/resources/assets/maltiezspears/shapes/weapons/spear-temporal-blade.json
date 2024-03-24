@@ -9,21 +9,21 @@
 	"textureSizes": {
 	},
 	"textures": {
-		"brass": "block/metal/plate/brass",
-		"iron": "block/metal/plate/iron",
-		"steel": "block/metal/plate/steel",
-		"tinbronze": "block/metal/plate/tinbronze",
-		"iron4": "block/metal/sheet/iron4",
-		"walnut": "block/wood/debarked/walnut",
-		"temporal": "item/resource/temporalgear",
-		"string": "item/tool/material/string"
+		"brass": "game:block/metal/plate/brass",
+		"iron": "game:block/metal/plate/iron",
+		"steel": "game:block/metal/plate/steel",
+		"tinbronze": "game:block/metal/plate/tinbronze",
+		"iron4": "game:block/metal/sheet/iron4",
+		"walnut": "game:block/wood/debarked/walnut",
+		"temporal": "game:item/resource/temporalgear",
+		"string": "game:item/tool/material/string"
 	},
 	"elements": [
 		{
 			"name": "Spear",
-			"from": [ 6.0, 1.2, -14.3 ],
-			"to": [ 6.0, 1.2, -14.3 ],
-			"rotationOrigin": [ 0.0, 0.7, -14.0 ],
+			"from": [ 5.2, 0.4, -14.3 ],
+			"to": [ 5.2, 0.4, -14.3 ],
+			"rotationOrigin": [ -0.8, -0.1, -14.0 ],
 			"rotationX": 90.0,
 			"rotationZ": -90.0,
 			"faces": {

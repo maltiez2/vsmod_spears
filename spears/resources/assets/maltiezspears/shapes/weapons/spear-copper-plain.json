@@ -16,9 +16,9 @@
 	"elements": [
 		{
 			"name": "Spear",
-			"from": [ 6.0, 1.2, -18.3 ],
-			"to": [ 6.0, 1.2, -18.3 ],
-			"rotationOrigin": [ 0.0, 0.7, -18.0 ],
+			"from": [ 5.2, 0.4, -18.3 ],
+			"to": [ 5.2, 0.4, -18.3 ],
+			"rotationOrigin": [ -0.8, -0.1, -18.0 ],
 			"rotationX": 90.0,
 			"rotationZ": -90.0,
 			"faces": {

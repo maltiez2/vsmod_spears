@@ -13,7 +13,7 @@ public class SpearFsm : SpearControls
 {
     public SpearFsm(ICoreAPI api, CollectibleObject collectible, SpearStats stats) : base(api, collectible)
     {
-        Console.WriteLine("Init SpearFsm");
+        /*Console.WriteLine("Init SpearFsm");
 
         if (api is ICoreClientAPI clientApi)
         {
@@ -35,10 +35,10 @@ public class SpearFsm : SpearControls
             AttacksSystem = new(api, AnimationSystem, GetAttacks(stats, api), debugName: "spears-attacks");
         }
 
-        Stats = stats;
+        Stats = stats;*/
     }
 
-    private Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack>? _attacksForDebugRendering;
+    /*private Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack>? _attacksForDebugRendering;
     private SpearAnimationSystem.AnimationType? _lastAttack;
     public virtual void OnRender(ItemSlot slot, IClientPlayer player)
     {
@@ -196,9 +196,6 @@ public class SpearFsm : SpearControls
                         damageType: EnumDamageType.PiercingAttack,
                         collider: new(stats.SpearHeadCollider),
                         tier: stats.OneHandedTier,
-                        hitSound: stats.HeadHitEntitySound != null ? new(stats.HeadHitEntitySound) : null,
-                        terrainSound: stats.HeadHitTerrainSound != null ? new(stats.HeadHitTerrainSound) : null
-
                     )
                 {
                     TerrainCollisionParticles = _terrainHitEffects,
@@ -305,7 +302,7 @@ public class SpearFsm : SpearControls
             SpearAnimationSystem.AnimationType.High2hStance => empty,
             _ => null
         };
-    }
+    }*/
 }
 
 public sealed class SpearStats

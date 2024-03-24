@@ -11,8 +11,6 @@ public abstract class PikeControls
 {
     protected PikeControls(ICoreAPI api, CollectibleObject collectible)
     {
-        Console.WriteLine("Init BaseControls");
-
         Fsm = new FiniteStateMachineAttributesBased(api, States, "shoulder-idle");
 
         BaseInputProperties inputProperties = new()
@@ -181,10 +179,9 @@ public abstract class PikeControls
         }
         return false;
     }
-    [InputHandler(state: "*-attack", "LeftMouseUp", "InterruptAction")]
+    [InputHandler(state: "*-attack", "InterruptAction")]
     protected bool CancelAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"InterruptAction: {input}");
         if (player == null) return false;
         Fsm.SetState(slot, (1, "idle"));
         OnCancelAttack(slot, player, GetStance(slot));

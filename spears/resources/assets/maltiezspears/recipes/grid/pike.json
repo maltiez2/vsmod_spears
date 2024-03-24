@@ -1,0 +1,12 @@
+[
+  {
+    "ingredientPattern": "SSH",
+    "ingredients": {
+      "S": {"type": "item", "code": "game:debarkedlog-*", "quantity": 1},
+      "H": {"type": "item", "code": "game:spearhead-*", "quantity": 1, "name": "material", "allowedVariants": ["tinbronze", "bismuthbronze", "blackbronze", "iron"]}
+    },
+    "width": 3,
+    "height": 1,
+    "output": {"type": "item", "code": "maltiezspears:pike-{material}"}
+  }
+]
