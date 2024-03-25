@@ -3,10 +3,20 @@
     "ingredientPattern": "SSH",
     "ingredients": {
       "S": {"type": "item", "code": "game:debarkedlog-*", "quantity": 1},
-      "H": {"type": "item", "code": "game:spearhead-*", "quantity": 1, "name": "material", "allowedVariants": ["tinbronze", "bismuthbronze", "blackbronze", "iron"]}
+      "H": {"type": "item", "code": "game:spearhead-*", "quantity": 1, "name": "material", "allowedVariants": ["tinbronze", "bismuthbronze", "blackbronze"]}
     },
     "width": 3,
     "height": 1,
-    "output": {"type": "item", "code": "maltiezspears:pike-{material}"}
+    "output": {"type": "item", "code": "maltiezspears:pike-plain-{material}"}
+  },
+  {
+    "ingredientPattern": "SSH",
+    "ingredients": {
+      "S": {"type": "item", "code": "game:debarkedlog-*", "quantity": 1},
+      "H": {"type": "item", "code": "game:ingot-*", "quantity": 1, "name": "material", "allowedVariants": ["iron", "steel"]}
+    },
+    "width": 3,
+    "height": 1,
+    "output": {"type": "item", "code": "maltiezspears:pike-plain-{material}"}
   }
 ]

@@ -10,7 +10,7 @@
 	},
 	"textures": {
 		"head": "game:block/metal/plate/iron",
-		"shaft": "game:item/tool/material/redwood"
+		"shaft": "game:block/wood/debarked/oak"
 	},
 	"elements": [
 		{

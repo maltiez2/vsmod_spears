@@ -10,8 +10,7 @@
 	},
 	"textures": {
 		"head": "game:block/metal/plate/steel",
-		"shaft": "game:block/wood/debarked/walnut",
-		"binding": "game:item/tool/material/string"
+		"shaft": "game:block/wood/debarked/walnut"
 	},
 	"elements": [
 		{
@@ -22,12 +21,12 @@
 			"rotationX": 90.0,
 			"rotationZ": -90.0,
 			"faces": {
-				"north": { "texture": "#binding", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
-				"east": { "texture": "#binding", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
-				"south": { "texture": "#binding", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
-				"west": { "texture": "#binding", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
-				"up": { "texture": "#binding", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
-				"down": { "texture": "#binding", "uv": [ 0.0, 0.0, 0.5, 0.5 ] }
+				"north": { "texture": "#shaft", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
+				"east": { "texture": "#shaft", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
+				"south": { "texture": "#shaft", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
+				"west": { "texture": "#shaft", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
+				"up": { "texture": "#shaft", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
+				"down": { "texture": "#shaft", "uv": [ 0.0, 0.0, 0.5, 0.5 ] }
 			},
 			"children": [
 				{

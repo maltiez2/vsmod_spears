@@ -4,12 +4,12 @@
     <ModName>Spears</ModName>
     <ModType>code</ModType>
     <GameVersion>1.19.4</GameVersion>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <ModId>maltiezspears</ModId>
     <Description>Reworks spears</Description>
     <Side>Universal</Side>
     <RequiredOnClient>true</RequiredOnClient>
-    <RequiredOnServer>false</RequiredOnServer>
+    <RequiredOnServer>true</RequiredOnServer>
   </PropertyGroup>
 
   <!-- Authors -->
@@ -23,10 +23,7 @@
       <Version>$(GameVersion)</Version>
     </Dependencies>
     <Dependencies Include="fsmlib">
-      <Version>0.3.0</Version>
-    </Dependencies>
-    <Dependencies Include="configlib">
-      <Version>1.0.0</Version>
+      <Version>0.4.0-dev.1</Version>
     </Dependencies>
   </ItemGroup>
 

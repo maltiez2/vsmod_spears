@@ -1,21 +1,9 @@
 ﻿{
   "code": "pike",
   "class": "Spears:PikeItem",
-  "behaviors": [
-    {
-      "name": "GroundStorable",
-      "properties": {
-        "layout": "WallHalves",
-        "wallOffY": 2,
-        "sprintKey": true,
-        "selectionBox": {"x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 0.1, "z2": 1},
-        "collisionBox": {"x1": 0, "y1": 0, "z1": 0, "x2": 0, "y2": 0, "z2": 0}
-      }
-    }
-  ],
+  "behaviors": [],
   "variantgroups": [{"code": "type", "states": ["plain"]}, {"code": "material", "states": ["tinbronze", "bismuthbronze", "blackbronze", "iron", "steel"]}],
   "damagedby": ["attacking"],
-  "tool": "spear",
   "shape": {"base": "weapons/pike-{material}-{type}"},
   "heldTpIdleAnimation": "spearsempty",
   "heldRightReadyAnimation": "spearsempty",
@@ -23,10 +11,7 @@
   "heldTpUseAnimation": "spearsempty",
   "attributes": {
     "heldItemPitchFollow": 1,
-    "groundStorageTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": 0, "y": 0, "z": 0}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 0.8},
-    "spearEntityCode": "spear-{type}-{material}",
     "handbook": {"groupBy": ["pike-*"]},
-    "toolrackTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": 0, "y": 0, "z": 0}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 0.8},
     "pikeStats": {
       "MaxReach": 8,
       "DamageByType": {"*-tinbronze": 3, "*-bismuthbronze": 3, "*-blackbronze": 3, "*-iron": 4, "*-steel": 5},

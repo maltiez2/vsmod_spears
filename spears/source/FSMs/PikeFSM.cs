@@ -63,10 +63,10 @@ public class PikeFsm : PikeControls
     {
         AnimationSystem?.Track(player);
 
-        if (_attacksForDebugRendering != null && _lastAttack != null)
+        /*if (_attacksForDebugRendering != null && _lastAttack != null)
         {
             _attacksForDebugRendering[_lastAttack.Value].RenderDebugColliders(player, slot);
-        }
+        }*/
     }
 
     protected const float GripFactor = 0.1f;
@@ -100,12 +100,18 @@ public class PikeFsm : PikeControls
         if (newStance == StanceType.Shoulder)
         {
             AnimationSystem?.ResetGrip(player, TimeSpan.FromSeconds(0.5));
+            player.Entity.Stats.Remove("walkspeed", "maltiezspears");
             Grip = 0;
+        }
+        else
+        {
+            player.Entity.Stats.Set("walkspeed", "maltiezspears", -0.2f);
         }
         AnimationSystem?.Play(player, GetStanceAnimationType(newStance));
     }
     protected override void OnDeselected(ItemSlot slot, IPlayer player)
     {
+        player.Entity.Stats.Remove("walkspeed", "maltiezspears");
         AnimationSystem?.EaseOut(player, _easeOutTime);
         AnimationSystem?.ResetGrip(player);
         Grip = 0;

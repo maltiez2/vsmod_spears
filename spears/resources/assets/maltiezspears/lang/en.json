@@ -20,5 +20,7 @@
     "item-pike-plain-bismuthbronze": "Pike (bismuthbronze)",
     "item-pike-plain-blackbronze": "Pike (blackbronze)",
     "item-pike-plain-iron": "Pike (iron)",
-    "item-pike-plain-steel": "Pike (steel)"
+    "item-pike-plain-steel": "Pike (steel)",
+
+    "itemdesc-pike-plain-*": "On terrain hit attack stops and red particle spanws. On entity hit with pike-head orange particle is spawned and full damage is dealt. On entity hit with pike shaft white particle spawned and only 0.5 damage is dealt.<br/><br/>Slows down by 20% when ready, carry it on shoulder to not receive walk speed debuf.<br/><br/>Controls: <br/>  R to change stance (high/low)<br/>  F to ready/put on shoulder<br/>  RMB + MouseWheel to chage grip"
 }
