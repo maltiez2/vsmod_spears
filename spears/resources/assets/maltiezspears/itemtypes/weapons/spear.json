@@ -27,7 +27,6 @@
     "groundStorageTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": 0, "y": 0, "z": 0}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 0.8},
     "damageByType": {"*-copper": 2, "*-tinbronze": 3, "*-bismuthbronze": 3, "*-blackbronze": 3, "*-iron": 3, "*-steel": 4},
     "spearEntityCode": "spear-{type}-{material}",
-    "handbook": {"groupBy": ["spear-*"]},
     "toolrackTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": 0, "y": 0, "z": 0}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 0.8},
     "spearStats": {
       "MaxReach": 6,

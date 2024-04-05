@@ -12,7 +12,6 @@
   "heldTpUseAnimation": "spearsempty",
   "attributes": {
     "heldItemPitchFollow": 1,
-    "handbook": {"groupBy": ["pike-*"]},
     "pikeStats": {
       "MaxReach": 8,
       "DamageByType": {"*-tinbronze": 3, "*-bismuthbronze": 3, "*-blackbronze": 3, "*-iron": 4, "*-steel": 5},
