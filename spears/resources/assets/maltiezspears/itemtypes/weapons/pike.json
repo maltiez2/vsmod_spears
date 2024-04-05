@@ -1,6 +1,7 @@
 ﻿{
   "code": "pike",
   "class": "Spears:PikeItem",
+  "tool": "spear",
   "behaviors": [],
   "variantgroups": [{"code": "type", "states": ["plain"]}, {"code": "material", "states": ["tinbronze", "bismuthbronze", "blackbronze", "iron", "steel"]}],
   "damagedby": ["attacking"],

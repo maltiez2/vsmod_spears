@@ -34,6 +34,7 @@ public sealed class SpearAnimationSystem : BaseSystem
         High2hStance,
         Idle1h,
         Idle2h,
+        Aim,
         Throw
     }
     public readonly struct AnimationParameters
@@ -65,7 +66,7 @@ public sealed class SpearAnimationSystem : BaseSystem
         private static long _id = 0;
     }
 
-    public SpearAnimationSystem(ICoreClientAPI api, string debugName = "") : base(api, debugName)
+    public SpearAnimationSystem(ICoreClientAPI api, string gripAnimation = "pike-grip", string debugName = "") : base(api, debugName)
     {
         _clientApi = api;
         _animationSystem = api.ModLoader.GetModSystem<AnimationManagerLibSystem>();
@@ -73,8 +74,8 @@ public sealed class SpearAnimationSystem : BaseSystem
         _verticalTrackingAnimation = new("tracking", "spears-vertical-tracking", EnumAnimationBlendMode.AddAverage, weight: 1);
         _animationSystem.Register(_verticalTrackingAnimation, AnimationData.Player("spears-vertical-tracking"));
 
-        _gripAnimation = new("grip", "pike-grip", EnumAnimationBlendMode.AddAverage, weight: 1);
-        _animationSystem.Register(_gripAnimation, AnimationData.Player("pike-grip"));
+        _gripAnimation = new("grip", gripAnimation, EnumAnimationBlendMode.AddAverage, weight: 1);
+        _animationSystem.Register(_gripAnimation, AnimationData.Player(gripAnimation));
     }
 
     public bool TpTracking { get; set; } = false;

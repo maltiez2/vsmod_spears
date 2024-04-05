@@ -1,6 +1,5 @@
 ﻿{
   "code": "javelin",
-  "class": "Spears:SpearItem",
   "behaviors": [
     {
       "name": "GroundStorable",

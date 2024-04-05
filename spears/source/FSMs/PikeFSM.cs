@@ -38,7 +38,7 @@ public class PikeFsm : PikeControls
         }
         else
         {
-            AttacksSystem = new(api, AnimationSystem, GetAttacks(stats, api), debugName: "spears-attacks");
+            AttacksSystem = new(api, AnimationSystem, GetAttacks(stats, api), debugName: "pike-attacks");
         }
 
         Stats = stats;

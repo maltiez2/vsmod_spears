@@ -22,5 +22,26 @@
     "item-pike-plain-iron": "Pike (iron)",
     "item-pike-plain-steel": "Pike (steel)",
 
+    "item-head-javelin-plain-flint": "Javelin head (flint)",
+    "item-head-javelin-plain-copper": "Javelin head (copper)",
+    "item-head-javelin-plain-tinbronze": "Javelin head (tin bronze)",
+    "item-head-javelin-plain-bismuthbronze": "Javelin head (bismuth bronze)",
+    "item-head-javelin-plain-blackbronze": "Javelin head (black bronze)",
+    "item-head-javelin-plain-iron": "Javelin head (iron)",
+    "item-head-javelin-plain-steel": "Javelin head (steel)",
+
+    "item-head-spear-plain-copper": "Spear head (copper)",
+    "item-head-spear-plain-tinbronze": "Spear head (tin bronze)",
+    "item-head-spear-plain-bismuthbronze": "Spear head (bismuth bronze)",
+    "item-head-spear-plain-blackbronze": "Spear head (black bronze)",
+    "item-head-spear-plain-iron": "Spear head (iron)",
+    "item-head-spear-plain-steel": "Spear head (steel)",
+
+    "item-head-pike-plain-tinbronze": "Pike head (tinbronze)",
+    "item-head-pike-plain-bismuthbronze": "Pike head (bismuthbronze)",
+    "item-head-pike-plain-blackbronze": "Pike head (blackbronze)",
+    "item-head-pike-plain-iron": "Pike head (iron)",
+    "item-head-pike-plain-steel": "Pike head (steel)",
+
     "itemdesc-pike-plain-*": "On terrain hit attack stops and red particle spanws. On entity hit with pike-head orange particle is spawned and full damage is dealt. On entity hit with pike shaft white particle spawned and only 0.5 damage is dealt.<br/><br/>Slows down by 20% when ready, carry it on shoulder to not receive walk speed debuf.<br/><br/>Controls: <br/>  R to change stance (high/low)<br/>  F to ready/put on shoulder<br/>  RMB + MouseWheel to chage grip"
 }

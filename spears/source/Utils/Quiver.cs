@@ -109,42 +109,6 @@ public sealed class AttributeRequirementSlot : ItemSlot
     private readonly int _maxStackSize;
 }
 
-public sealed class InventoryContainers : InventoryBasePlayer
-{
-    private ItemSlot[] slots;
-
-    public InventoryContainers(string className, string playerUID, ICoreAPI api) : base(className, playerUID, api)
-    {
-        
-    }
-
-    public override ItemSlot? this[int slotId]
-    {
-        get
-        {
-            if (slotId < 0 || slotId >= Count)
-            {
-                return null;
-            }
-            return slots[slotId];
-        }
-        set
-        {
-            if (slotId < 0 || slotId >= Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(slotId));
-            }
-
-            slots[slotId] = value ?? throw new ArgumentNullException(nameof(value));
-        }
-    }
-
-    public override int Count => throw new System.NotImplementedException();
-
-    public override void FromTreeAttributes(ITreeAttribute tree) => throw new System.NotImplementedException();
-    public override void ToTreeAttributes(ITreeAttribute tree) => throw new System.NotImplementedException();
-}
-
 public sealed class AttachableSlot : ItemSlot
 {
     public override int MaxSlotStackSize => 1;
@@ -188,6 +152,7 @@ public class AttachableContainers : InventoryBasePlayer
         BeltRight,
         BeltBackLeft,
         BeltBackRight,
+        BeltBack,
 
         SlotTypesCount,
         None
@@ -197,7 +162,6 @@ public class AttachableContainers : InventoryBasePlayer
 
     protected List<ItemSlot> backPackContents = new List<ItemSlot>();
 
-    private ItemSlot[] _attachableSlots;
     private readonly Dictionary<SlotType, List<ItemSlot>> _attachableSlots = new();
 
     public override int CountForNetworkPacket => (int)SlotType.SlotTypesCount;

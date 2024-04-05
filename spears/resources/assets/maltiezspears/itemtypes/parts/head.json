@@ -1,0 +1,16 @@
+﻿{
+  "code": "head",
+  "maxstacksize": 4,
+  "variantgroups": [
+    {"code": "weapon", "states": ["pike", "spear", "javelin"]},
+    {"code": "type", "states": ["plain"]},
+    {"code": "material", "states": ["flint", "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "steel"]}
+  ],
+  "allowedVariants": ["*-javelin-plain-flint", "*-javelin-plain-copper", "*-spear-plain-copper", "*-tinbronze", "*-bismuthbronze", "*-blackbronze", "*-iron", "*-steel"],
+  "shape": {"base": "parts/head/{weapon}-{material}-{type}"},
+  "attributes": {"handbook": {"groupBy": ["head-*"]}},
+  "creativeinventory": {"maltiezspears": ["*"]},
+  "guiTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": -53, "y": -39, "z": -8}, "origin": {"x": -0.1, "y": 0.1, "z": -0.5}, "scale": 1.92},
+  "groundTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": 0, "y": 0, "z": 0}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 4},
+  "tpHandTransform": {"translation": {"x": 0, "y": 0.1, "z": 0}, "rotation": {"x": 0, "y": -90, "z": -90}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 0.8}
+}

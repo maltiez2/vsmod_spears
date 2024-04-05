@@ -1,6 +1,5 @@
 ﻿{
   "code": "spear",
-  "class": "Spears:SpearItem",
   "behaviors": [
     {
       "name": "GroundStorable",
