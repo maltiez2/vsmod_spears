@@ -4,7 +4,7 @@
     <ModName>Spears</ModName>
     <ModType>code</ModType>
     <GameVersion>1.19.4</GameVersion>
-    <Version>0.0.3</Version>
+    <Version>0.0.4</Version>
     <ModId>maltiezspears</ModId>
     <Description>Reworks spears</Description>
     <Side>Universal</Side>
