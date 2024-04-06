@@ -213,6 +213,7 @@ public sealed class SpearFsm : SpearControls
     }
     #endregion
 
+    #region Animations
     private static Dictionary<SpearAnimationSystem.AnimationType, List<SpearAnimationSystem.AnimationParameters>> GetAnimations(SpearStats stats)
     {
         Dictionary<SpearAnimationSystem.AnimationType, List<SpearAnimationSystem.AnimationParameters>> result = new();
@@ -232,50 +233,47 @@ public sealed class SpearFsm : SpearControls
             RunParameters.EaseOut(TimeSpan.FromMilliseconds(1000))
             );
 
-
         return animationType switch
         {
-            SpearAnimationSystem.AnimationType.High2hAttack => new(
-                "pike-high-2h",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 1, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 2, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 3, ProgressModifierType.Bounce)
-                ),
-            SpearAnimationSystem.AnimationType.Low2hAttack => new(
-                "pike-low-2h",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 1, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 3, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 4, ProgressModifierType.Bounce)
-                ),
-            SpearAnimationSystem.AnimationType.Idle1h => new(
-                "pike-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 0, ProgressModifierType.Bounce)
-                ),
-            SpearAnimationSystem.AnimationType.High2hStance => new(
-                "pike-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 2, ProgressModifierType.Bounce)
-                ),
-            SpearAnimationSystem.AnimationType.Low2hStance => new(
-                "pike-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 1, ProgressModifierType.Bounce)
-                ),
+            SpearAnimationSystem.AnimationType.High2hAttack => empty,
+            SpearAnimationSystem.AnimationType.Low2hAttack => empty,
             SpearAnimationSystem.AnimationType.Low1hAttack => empty,
             SpearAnimationSystem.AnimationType.High1hAttack => empty,
             SpearAnimationSystem.AnimationType.Low1hBlockAttack => empty,
             SpearAnimationSystem.AnimationType.High1hBlockAttack => empty,
             SpearAnimationSystem.AnimationType.Low2hBlockAttack => empty,
             SpearAnimationSystem.AnimationType.High2hBlockAttack => empty,
-            SpearAnimationSystem.AnimationType.Low1hBlock => empty,
-            SpearAnimationSystem.AnimationType.High1hBlock => empty,
-            SpearAnimationSystem.AnimationType.Low2hBlock => empty,
-            SpearAnimationSystem.AnimationType.High2hBlock => empty,
-            SpearAnimationSystem.AnimationType.Low1hStance => empty,
-            SpearAnimationSystem.AnimationType.High1hStance => empty,
-            SpearAnimationSystem.AnimationType.Idle2h => empty,
             SpearAnimationSystem.AnimationType.Aim => empty,
             SpearAnimationSystem.AnimationType.Throw => empty,
-            _ => empty,
+
+            SpearAnimationSystem.AnimationType.Low2hBlock => new(
+                "spear-2h-stances",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 2, ProgressModifierType.Bounce)
+                ),
+            SpearAnimationSystem.AnimationType.High2hBlock => new(
+                "spear-2h-stances",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 3, ProgressModifierType.Bounce)
+                ),
+
+            SpearAnimationSystem.AnimationType.Low2hStance => new(
+                "spear-2h-stances",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 0, ProgressModifierType.Bounce)
+                ),
+            SpearAnimationSystem.AnimationType.High2hStance => new(
+                "spear-2h-stances",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 1, ProgressModifierType.Bounce)
+                ),
+            SpearAnimationSystem.AnimationType.Low1hStance => new(
+                "spear-1h-stances",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 0, ProgressModifierType.Bounce)
+                ),
+            SpearAnimationSystem.AnimationType.High1hStance => new(
+                "spear-1h-stances",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 1, ProgressModifierType.Bounce)
+                ),
+            _ => null
         };
+        #endregion
     }
 }
 
