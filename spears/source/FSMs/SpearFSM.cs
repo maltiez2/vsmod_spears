@@ -1,6 +1,7 @@
 ﻿using AnimationManagerLib.API;
 using MaltiezFSM;
 using MaltiezFSM.Framework.Simplified.Systems;
+using MaltiezFSM.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,6 +79,76 @@ public sealed class SpearFsm : SpearControls
     private const float _gripFactor = 0.1f;
     private float _grip = 0;
 
+    protected override bool OnStartAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
+    {
+        _lastAttack = GetAttackAnimationType(stanceType);
+        _attacksSystem?.Start(
+            GetAttackAnimationType(stanceType),
+            player,
+            slot,
+            attackFinishedCallback: () => OnAttackFinished(slot, player, stanceType),
+            terrainCollisionCallback: () => OnTerrainHit(slot, player),
+            entityCollisionCallback: () => OnEntityHit(slot, player));
+        return true;
+    }
+    protected override bool OnStartBlock(ItemSlot slot, IPlayer player, StanceType stanceType, bool attacking)
+    {
+        if (attacking) CancelAttack(slot, player);
+        _animationSystem?.Play(player, GetStanceAnimationType(stanceType));
+        return true;
+    }
+    protected override bool OnStartAim(ItemSlot slot, IPlayer player, StanceType stanceType)
+    {
+        return true;
+    }
+    protected override bool OnStartThrow(ItemSlot slot, IPlayer player, StanceType stanceType)
+    {
+        return true;
+    }
+
+    protected override void OnCancelAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
+    {
+
+    }
+    protected override void OnCancelBlock(ItemSlot slot, IPlayer player, StanceType stanceType, bool attacking)
+    {
+        if (stanceType == StanceType.OneHandedUpper)
+        {
+            _animationSystem?.ResetGrip(player, TimeSpan.FromSeconds(0.5));
+            _grip = 0;
+        }
+        _animationSystem?.Play(player, GetStanceAnimationType(stanceType));
+    }
+    protected override void OnCancelAim(ItemSlot slot, IPlayer player, StanceType stanceType)
+    {
+
+    }
+
+    protected override void OnStanceChange(ItemSlot slot, IPlayer player, StanceType newStance)
+    {
+        if (newStance == StanceType.OneHandedUpper)
+        {
+            _animationSystem?.ResetGrip(player, TimeSpan.FromSeconds(0.5));
+            _grip = 0;
+        }
+        _animationSystem?.Play(player, GetStanceAnimationType(newStance));
+    }
+    protected override void OnDeselected(ItemSlot slot, IPlayer player)
+    {
+        player.Entity.Stats.Remove("walkspeed", "maltiezspears");
+        _animationSystem?.EaseOut(player, _easeOutTime);
+        _animationSystem?.ResetGrip(player);
+        _grip = 0;
+    }
+    protected override void OnSelected(ItemSlot slot, IPlayer player)
+    {
+        _animationSystem?.Play(player, GetStanceAnimationType(GetStance(slot)));
+    }
+
+    private void OnAttackFinished(ItemSlot slot, IPlayer player, StanceType stanceType)
+    {
+        CancelAttack(slot, player);
+    }
     private bool OnEntityHit(ItemSlot slot, IPlayer player)
     {
         slot.Itemstack.Item.DamageItem(player.Entity.World, player.Entity, slot, _stats.DurabilitySpentOnEntityHit);
@@ -85,7 +156,7 @@ public sealed class SpearFsm : SpearControls
     }
     private bool OnTerrainHit(ItemSlot slot, IPlayer player)
     {
-        CancelAttack(slot, player, Blocking(slot));
+        CancelAttack(slot, player);
         slot.Itemstack.Item.DamageItem(player.Entity.World, player.Entity, slot, _stats.DurabilitySpentOnTerrainHit);
         return true;
     }
@@ -214,6 +285,34 @@ public sealed class SpearFsm : SpearControls
     #endregion
 
     #region Animations
+    private static SpearAnimationSystem.AnimationType GetAttackAnimationType(StanceType stance)
+    {
+        return stance switch
+        {
+            StanceType.OneHandedUpper => SpearAnimationSystem.AnimationType.High1hAttack,
+            StanceType.OneHandedLower => SpearAnimationSystem.AnimationType.Low1hAttack,
+            StanceType.TwoHandedUpper => SpearAnimationSystem.AnimationType.High2hAttack,
+            StanceType.TwoHandedLower => SpearAnimationSystem.AnimationType.Low2hAttack,
+            StanceType.BlockLower => SpearAnimationSystem.AnimationType.Low2hBlockAttack,
+            StanceType.BlockUpper => SpearAnimationSystem.AnimationType.High2hBlockAttack,
+            _ => throw new NotImplementedException()
+        };
+    }
+    private static SpearAnimationSystem.AnimationType GetStanceAnimationType(StanceType stance)
+    {
+        return stance switch
+        {
+            StanceType.OneHandedUpper => SpearAnimationSystem.AnimationType.High1hStance,
+            StanceType.OneHandedLower => SpearAnimationSystem.AnimationType.Low1hStance,
+            StanceType.TwoHandedUpper => SpearAnimationSystem.AnimationType.High2hStance,
+            StanceType.TwoHandedLower => SpearAnimationSystem.AnimationType.Low2hStance,
+            StanceType.BlockLower => SpearAnimationSystem.AnimationType.Low2hBlock,
+            StanceType.BlockUpper => SpearAnimationSystem.AnimationType.High2hBlock,
+            _ => throw new NotImplementedException()
+        };
+    }
+
+
     private static Dictionary<SpearAnimationSystem.AnimationType, List<SpearAnimationSystem.AnimationParameters>> GetAnimations(SpearStats stats)
     {
         Dictionary<SpearAnimationSystem.AnimationType, List<SpearAnimationSystem.AnimationParameters>> result = new();
@@ -273,8 +372,8 @@ public sealed class SpearFsm : SpearControls
                 ),
             _ => null
         };
-        #endregion
     }
+    #endregion
 }
 
 public sealed class SpearStats

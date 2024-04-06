@@ -65,7 +65,9 @@ public abstract class SpearControls
         OneHandedUpper,
         OneHandedLower,
         TwoHandedUpper,
-        TwoHandedLower
+        TwoHandedLower,
+        BlockLower,
+        BlockUpper
     };
 
     protected virtual void OnDeselected(ItemSlot slot, IPlayer player)
@@ -76,7 +78,7 @@ public abstract class SpearControls
     {
 
     }
-    protected virtual bool OnStartThrow(ItemSlot slot, IPlayer player, StanceType stanceType, bool blocking)
+    protected virtual bool OnStartThrow(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         return false;
     }
@@ -84,7 +86,7 @@ public abstract class SpearControls
     {
         return false;
     }
-    protected virtual bool OnStartAttack(ItemSlot slot, IPlayer player, StanceType stanceType, bool blocking)
+    protected virtual bool OnStartAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         return false;
     }
@@ -92,27 +94,26 @@ public abstract class SpearControls
     {
         return false;
     }
-    protected virtual void OnCancelAttack(ItemSlot slot, IPlayer player, StanceType stanceType, bool blocking)
+    protected virtual void OnCancelAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
 
     }
-    protected virtual bool OnCancelAim(ItemSlot slot, IPlayer player, StanceType stanceType)
+    protected virtual void OnCancelAim(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
-        return false;
     }
     protected virtual void OnCancelBlock(ItemSlot slot, IPlayer player, StanceType stanceType, bool attacking)
     {
 
     }
-    protected virtual void OnStanceChange(ItemSlot slot, IPlayer player, StanceType newStance, bool blocking)
+    protected virtual void OnStanceChange(ItemSlot slot, IPlayer player, StanceType newStance)
     {
 
     }
 
-    protected void CancelAttack(ItemSlot slot, IPlayer player, bool blocking)
+    protected void CancelAttack(ItemSlot slot, IPlayer player)
     {
         Fsm.SetState(slot, (2, "idle"));
-        OnCancelAttack(slot, player, GetStance(slot), blocking);
+        OnCancelAttack(slot, player, GetStance(slot));
     }
     protected void CancelBlock(ItemSlot slot, IPlayer player, bool attacking)
     {
@@ -129,13 +130,18 @@ public abstract class SpearControls
     {
         bool onehanded = Fsm.CheckState(slot, 0, "onehanded");
         bool lowerGrip = Fsm.CheckState(slot, 1, "lower");
+        bool block = Fsm.CheckState(slot, 2, "block");
 
-        return (onehanded, lowerGrip) switch
+        return (onehanded, lowerGrip, block) switch
         {
-            (true, true) => StanceType.OneHandedLower,
-            (true, false) => StanceType.OneHandedUpper,
-            (false, true) => StanceType.TwoHandedLower,
-            (false, false) => StanceType.TwoHandedUpper
+            (true, true, false) => StanceType.OneHandedLower,
+            (true, false, false) => StanceType.OneHandedUpper,
+            (false, true, false) => StanceType.TwoHandedLower,
+            (false, false, false) => StanceType.TwoHandedUpper,
+            (true, true, true) => StanceType.BlockLower,
+            (true, false, true) => StanceType.BlockUpper,
+            (false, true, true) => StanceType.BlockLower,
+            (false, false, true) => StanceType.BlockUpper
         };
     }
     protected bool Blocking(ItemSlot slot) => Fsm.CheckState(slot, 2, "block");
@@ -148,7 +154,7 @@ public abstract class SpearControls
         if (player.Entity.LeftHandItemSlot.Empty || onehanded) return true;
 
         Fsm.SetState(slot, (0, "onehanded"));
-        OnStanceChange(slot, player, GetStance(slot), Blocking(slot));
+        OnStanceChange(slot, player, GetStance(slot));
         return false;
     }
 
@@ -225,7 +231,7 @@ public abstract class SpearControls
         if (!EnsureStance(slot, player)) return false;
         if (!CanAttack(player)) return false;
         
-        return OnStartThrow(slot, player, GetStance(slot), Blocking(slot));
+        return OnStartThrow(slot, player, GetStance(slot));
     }
     [InputHandler(states: new string[] { "*-*-idle", "*-*-block" }, "Aim")]
     protected bool StartAim(ItemSlot slot, IPlayer? player, IInput input, IState state)
@@ -257,7 +263,7 @@ public abstract class SpearControls
         if (player == null) return false;
         if (!EnsureStance(slot, player)) return false;
         if (!CanAttack(player)) return false;
-        if (OnStartAttack(slot, player, GetStance(slot), Blocking(slot)))
+        if (OnStartAttack(slot, player, GetStance(slot)))
         {
             Fsm.SetState(slot, (2, "attack"));
             return true;
@@ -269,7 +275,7 @@ public abstract class SpearControls
     {
         if (player == null) return false;
         Fsm.SetState(slot, (2, "idle"));
-        OnCancelAttack(slot, player, GetStance(slot), Blocking(slot));
+        OnCancelAttack(slot, player, GetStance(slot));
         return false;
     }
 
@@ -301,7 +307,7 @@ public abstract class SpearControls
         if (player == null) return false;
         if (!CanAttack(player)) return false;
         Fsm.SetState(slot, (1, "upper"));
-        OnStanceChange(slot, player, GetStance(slot), Blocking(slot));
+        OnStanceChange(slot, player, GetStance(slot));
         return false;
     }
     [InputHandler(states: new string[] { "*-upper-idle", "*-upper-block" }, "StanceChange")]
@@ -310,7 +316,7 @@ public abstract class SpearControls
         if (player == null) return false;
         if (!CanAttack(player)) return false;
         Fsm.SetState(slot, (1, "lower"));
-        OnStanceChange(slot, player, GetStance(slot), Blocking(slot));
+        OnStanceChange(slot, player, GetStance(slot));
         return false;
     }
 
@@ -320,7 +326,7 @@ public abstract class SpearControls
         if (player == null) return false;
         if (!CanAttack(player)) return false;
         Fsm.SetState(slot, (0, "twohanded"));
-        OnStanceChange(slot, player, GetStance(slot), Blocking(slot));
+        OnStanceChange(slot, player, GetStance(slot));
         return true;
     }
     [InputHandler(states: new string[] { "twohanded-*-idle", "twohanded-*-block" }, "GripChange")]
@@ -329,7 +335,7 @@ public abstract class SpearControls
         if (player == null || !player.Entity.LeftHandItemSlot.Empty) return false;
         if (!CanAttack(player)) return false;
         Fsm.SetState(slot, (0, "onehanded"));
-        OnStanceChange(slot, player, GetStance(slot), Blocking(slot));
+        OnStanceChange(slot, player, GetStance(slot));
         return true;
     }
     #endregion

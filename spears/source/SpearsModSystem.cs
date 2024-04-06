@@ -39,12 +39,24 @@ public class SpearsModSystem : ModSystem
         _prevValue = args.value;
 
         ItemSlot slot = _clientApi.World.Player.InventoryManager.ActiveHotbarSlot;
-        if (slot.Itemstack?.Item is not PikeItem pike) return true;
 
-        IClientPlayer player = _clientApi.World.Player;
-        bool handled = pike.OnMouseWheel(slot, player, args.deltaPrecise);
-        
-        return !handled;
+        if (slot.Itemstack?.Item is PikeItem pike)
+        {
+            IClientPlayer player = _clientApi.World.Player;
+            bool handled = pike.OnMouseWheel(slot, player, args.deltaPrecise);
+
+            return !handled;
+        }
+
+        if (slot.Itemstack?.Item is SpearItem spear)
+        {
+            IClientPlayer player = _clientApi.World.Player;
+            bool handled = spear.OnMouseWheel(slot, player, args.deltaPrecise);
+
+            return !handled;
+        }
+
+        return true;
     }
 }
 
@@ -54,15 +66,22 @@ public class SpearItem : Item
     {
         base.OnLoaded(api);
 
-        //SpearStats stats = Attributes["spearStats"].AsObject<SpearStats>();
-        //_fsm = new(api, this, stats);
+        SpearStats stats = Attributes["spearStats"].AsObject<SpearStats>();
+        _fsm = new(api, this, stats);
     }
 
     public override void OnHeldRenderOpaque(ItemSlot inSlot, IClientPlayer byPlayer)
     {
         base.OnHeldRenderOpaque(inSlot, byPlayer);
 
-        //_fsm?.OnRender(inSlot, byPlayer);
+        _fsm?.OnRender(inSlot, byPlayer);
+    }
+
+    public bool OnMouseWheel(ItemSlot slot, IClientPlayer byPlayer, float delta)
+    {
+        if (!byPlayer.Entity.Controls.RightMouseDown) return false;
+
+        return _fsm?.ChangeGrip(slot, byPlayer, delta) ?? false;
     }
 
     public override void OnHeldAttackStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandHandling handling)
