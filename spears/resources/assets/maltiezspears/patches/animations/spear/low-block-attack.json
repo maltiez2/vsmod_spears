@@ -1,0 +1,178 @@
+﻿[
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "spear-low-block-hands", "animation": "spear-low-block-hands", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "spear-low-block-hands",
+      "code": "spear-low-block-hands",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 2,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "UpperArmR": {"rotationX": 47, "rotationY": 26, "rotationZ": 16},
+            "LowerArmR": {"rotationX": 6, "rotationY": 0, "rotationZ": -85},
+            "ItemAnchor": {"offsetX": 8, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperArmL": {"rotationX": -8, "rotationY": -11, "rotationZ": -46},
+            "LowerArmL": {"rotationX": 19, "rotationY": 0, "rotationZ": -94}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "UpperArmR": {"rotationX": 47, "rotationY": -1, "rotationZ": -35},
+            "LowerArmR": {"rotationX": 31, "rotationY": 0, "rotationZ": -95},
+            "ItemAnchor": {"offsetX": 8, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 2, "rotationZ": 11},
+            "UpperArmL": {"rotationX": -3, "rotationY": 21, "rotationZ": -24},
+            "LowerArmL": {"rotationX": 19, "rotationY": 0, "rotationZ": -130}
+          }
+        }
+      ]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "spear-low-block-legs", "animation": "spear-low-block-legs", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "spear-low-block-legs",
+      "code": "spear-low-block-legs",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 2,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "LowerTorso": {"offsetX": 1, "offsetY": -0.1, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperTorso": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "Neck": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 10},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": -9},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 9}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "LowerTorso": {"offsetX": -2, "offsetY": -0.1, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 10},
+            "UpperTorso": {"rotationX": 0, "rotationY": 30, "rotationZ": 0},
+            "Neck": {"rotationX": 3, "rotationY": -30, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": -7},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 30},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": -47},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 32}
+          }
+        }
+      ]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "spear-low-block-hands-fp", "animation": "spear-low-block-hands-fp", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "spear-low-block-hands-fp",
+      "code": "spear-low-block-hands-fp",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 2,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "UpperArmR": {"rotationX": 47, "rotationY": 26, "rotationZ": 16},
+            "LowerArmR": {"rotationX": 6, "rotationY": 0, "rotationZ": -85},
+            "ItemAnchor": {"offsetX": 8, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperArmL": {"rotationX": -8, "rotationY": -11, "rotationZ": -46},
+            "LowerArmL": {"rotationX": 19, "rotationY": 0, "rotationZ": -94}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "UpperArmR": {"rotationX": 47, "rotationY": -1, "rotationZ": -35},
+            "LowerArmR": {"rotationX": 31, "rotationY": 0, "rotationZ": -95},
+            "ItemAnchor": {"offsetX": 8, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 2, "rotationZ": 11},
+            "UpperArmL": {"rotationX": -3, "rotationY": 21, "rotationZ": -24},
+            "LowerArmL": {"rotationX": 19, "rotationY": 0, "rotationZ": -130}
+          }
+        }
+      ]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "spear-low-block-legs-fp", "animation": "spear-low-block-legs-fp", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "spear-low-block-legs-fp",
+      "code": "spear-low-block-legs-fp",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 2,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "LowerTorso": {"offsetX": 1, "offsetY": -0.1, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperTorso": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "Neck": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 10},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": -9},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 9}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "LowerTorso": {"offsetX": -2, "offsetY": -0.1, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 10},
+            "UpperTorso": {"rotationX": 0, "rotationY": 30, "rotationZ": 0},
+            "Neck": {"rotationX": 3, "rotationY": -30, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": -7},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 30},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": -47},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 32}
+          }
+        }
+      ]
+    }
+  }
+]

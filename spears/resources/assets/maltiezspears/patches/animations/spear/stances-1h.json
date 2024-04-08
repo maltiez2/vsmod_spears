@@ -41,10 +41,7 @@
       "quantityframes": 2,
       "onActivityStopped": "EaseOut",
       "onAnimationEnd": "Hold",
-      "keyframes": [
-        {"frame": 0, "elements": {"UpperTorso": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}, "Neck": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}}},
-        {"frame": 1, "elements": {"UpperTorso": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}, "Neck": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}}}
-      ]
+      "keyframes": [{"frame": 0, "elements": {}}, {"frame": 1, "elements": {}}]
     }
   },
   {
@@ -103,10 +100,7 @@
       "quantityframes": 2,
       "onActivityStopped": "EaseOut",
       "onAnimationEnd": "Hold",
-      "keyframes": [
-        {"frame": 0, "elements": {"UpperTorso": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}, "Neck": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}}},
-        {"frame": 1, "elements": {"UpperTorso": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}, "Neck": {"rotationX": 0, "rotationY": 0, "rotationZ": 0}}}
-      ]
+      "keyframes": [{"frame": 0, "elements": {}}, {"frame": 1, "elements": {}}]
     }
   },
   {

@@ -1,7 +1,6 @@
 ﻿using AnimationManagerLib.API;
 using MaltiezFSM;
 using MaltiezFSM.Framework.Simplified.Systems;
-using MaltiezFSM.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,33 +81,51 @@ public sealed class SpearFsm : SpearControls
     protected override bool OnStartAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         _lastAttack = GetAttackAnimationType(stanceType);
-        _attacksSystem?.Start(
-            GetAttackAnimationType(stanceType),
-            player,
-            slot,
-            attackFinishedCallback: () => OnAttackFinished(slot, player, stanceType),
-            terrainCollisionCallback: () => OnTerrainHit(slot, player),
-            entityCollisionCallback: () => OnEntityHit(slot, player));
+        if (stanceType == StanceType.BlockUpper || stanceType == StanceType.BlockLower)
+        {
+            _attacksSystem?.Start(
+                GetAttackAnimationType(stanceType),
+                player,
+                slot,
+                attackFinishedCallback: () => OnBlockAttackFinished(slot, player, stanceType),
+                terrainCollisionCallback: () => OnTerrainHit(slot, player),
+                entityCollisionCallback: () => OnEntityHit(slot, player));
+        }
+        else
+        {
+            _attacksSystem?.Start(
+                GetAttackAnimationType(stanceType),
+                player,
+                slot,
+                attackFinishedCallback: () => OnAttackFinished(slot, player, stanceType),
+                terrainCollisionCallback: () => OnTerrainHit(slot, player),
+                entityCollisionCallback: () => OnEntityHit(slot, player));
+        }
+        
         return true;
     }
     protected override bool OnStartBlock(ItemSlot slot, IPlayer player, StanceType stanceType, bool attacking)
     {
         if (attacking) CancelAttack(slot, player);
-        _animationSystem?.Play(player, GetStanceAnimationType(stanceType));
+        _animationSystem?.Play(player, GetBlockAnimationType(stanceType));
         return true;
     }
     protected override bool OnStartAim(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
+        CancelAttack(slot, player);
+        _animationSystem?.Play(player, SpearAnimationSystem.AnimationType.Aim);
         return true;
     }
     protected override bool OnStartThrow(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
+        _animationSystem?.Play(player, SpearAnimationSystem.AnimationType.Throw);
         return true;
     }
 
     protected override void OnCancelAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
-
+        _attacksSystem?.Stop(GetAttackAnimationType(stanceType), player);
+        _animationSystem?.Play(player, GetStanceAnimationType(stanceType));
     }
     protected override void OnCancelBlock(ItemSlot slot, IPlayer player, StanceType stanceType, bool attacking)
     {
@@ -121,7 +138,7 @@ public sealed class SpearFsm : SpearControls
     }
     protected override void OnCancelAim(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
-
+        _animationSystem?.Play(player, GetStanceAnimationType(stanceType));
     }
 
     protected override void OnStanceChange(ItemSlot slot, IPlayer player, StanceType newStance)
@@ -148,6 +165,11 @@ public sealed class SpearFsm : SpearControls
     private void OnAttackFinished(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         CancelAttack(slot, player);
+    }
+    private void OnBlockAttackFinished(ItemSlot slot, IPlayer player, StanceType stanceType)
+    {
+        CancelAttack(slot, player);
+        StartBlock(slot, player);
     }
     private bool OnEntityHit(ItemSlot slot, IPlayer player)
     {
@@ -311,6 +333,17 @@ public sealed class SpearFsm : SpearControls
             _ => throw new NotImplementedException()
         };
     }
+    private static SpearAnimationSystem.AnimationType GetBlockAnimationType(StanceType stance)
+    {
+        return stance switch
+        {
+            StanceType.TwoHandedUpper => SpearAnimationSystem.AnimationType.High2hBlock,
+            StanceType.TwoHandedLower => SpearAnimationSystem.AnimationType.Low2hBlock,
+            StanceType.BlockLower => SpearAnimationSystem.AnimationType.Low2hBlock,
+            StanceType.BlockUpper => SpearAnimationSystem.AnimationType.High2hBlock,
+            _ => throw new NotImplementedException()
+        };
+    }
 
 
     private static Dictionary<SpearAnimationSystem.AnimationType, List<SpearAnimationSystem.AnimationParameters>> GetAnimations(SpearStats stats)
@@ -334,16 +367,50 @@ public sealed class SpearFsm : SpearControls
 
         return animationType switch
         {
-            SpearAnimationSystem.AnimationType.High2hAttack => empty,
-            SpearAnimationSystem.AnimationType.Low2hAttack => empty,
-            SpearAnimationSystem.AnimationType.Low1hAttack => empty,
-            SpearAnimationSystem.AnimationType.High1hAttack => empty,
-            SpearAnimationSystem.AnimationType.Low1hBlockAttack => empty,
-            SpearAnimationSystem.AnimationType.High1hBlockAttack => empty,
-            SpearAnimationSystem.AnimationType.Low2hBlockAttack => empty,
-            SpearAnimationSystem.AnimationType.High2hBlockAttack => empty,
-            SpearAnimationSystem.AnimationType.Aim => empty,
-            SpearAnimationSystem.AnimationType.Throw => empty,
+            SpearAnimationSystem.AnimationType.High2hAttack => new(
+                "spear-high-2h",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 0, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 0, ProgressModifierType.Bounce)
+                ),
+            SpearAnimationSystem.AnimationType.Low2hAttack => new(
+                "spear-low-2h",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 0, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 0, ProgressModifierType.Bounce)
+                ),
+            SpearAnimationSystem.AnimationType.Low1hAttack => new(
+                "spear-low-1h",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 0, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 0, ProgressModifierType.Bounce)
+                ),
+            SpearAnimationSystem.AnimationType.High1hAttack => new(
+                "spear-high-1h",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 0, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 0, ProgressModifierType.Bounce)
+                ),
+            SpearAnimationSystem.AnimationType.Low2hBlockAttack => new(
+                "spear-low-block",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 0, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 0, ProgressModifierType.Bounce)
+                ),
+            SpearAnimationSystem.AnimationType.High2hBlockAttack => new(
+                "spear-high-block",
+               RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 0, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 0, ProgressModifierType.Bounce)
+                ),
+            SpearAnimationSystem.AnimationType.Aim => new(
+                "spear-throw",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 0, ProgressModifierType.Linear)
+                ),
+            SpearAnimationSystem.AnimationType.Throw => new(
+                "spear-throw",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 1, ProgressModifierType.Linear)
+                ),
 
             SpearAnimationSystem.AnimationType.Low2hBlock => new(
                 "spear-2h-stances",
