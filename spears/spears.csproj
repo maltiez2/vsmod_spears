@@ -4,7 +4,7 @@
     <ModName>Spears</ModName>
     <ModType>code</ModType>
     <GameVersion>1.19.4</GameVersion>
-    <Version>0.0.4</Version>
+    <Version>0.0.7</Version>
     <ModId>maltiezspears</ModId>
     <Description>Reworks spears</Description>
     <Side>Universal</Side>
@@ -23,7 +23,7 @@
       <Version>$(GameVersion)</Version>
     </Dependencies>
     <Dependencies Include="fsmlib">
-      <Version>0.4.1</Version>
+      <Version>0.4.3</Version>
     </Dependencies>
   </ItemGroup>
 

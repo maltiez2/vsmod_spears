@@ -1,17 +1,34 @@
 ﻿[
+  {"file": "game:entities/spear", "op": "replace", "path": "/client/shapeByType/*", "value": {"base": "maltiezspears:vanilla/spear-stone", "offsetX": -0.8125}},
+  {"file": "game:entities/spear", "op": "replace", "path": "/client/shapeByType/spear-generic-copper", "value": {"base": "maltiezspears:vanilla/spear-metal", "offsetX": -0.8125}},
+  {
+    "file": "game:entities/spear",
+    "op": "replace",
+    "path": "/client/shapeByType/spear-generic-tinbronze",
+    "value": {"base": "maltiezspears:vanilla/spear-metal", "offsetX": -0.8125}
+  },
+  {
+    "file": "game:entities/spear",
+    "op": "replace",
+    "path": "/client/shapeByType/spear-generic-bismuthbronze",
+    "value": {"base": "maltiezspears:vanilla/spear-metal", "offsetX": -0.8125}
+  },
+  {
+    "file": "game:entities/spear",
+    "op": "replace",
+    "path": "/client/shapeByType/spear-generic-blackbronze",
+    "value": {"base": "maltiezspears:vanilla/spear-metal", "offsetX": -0.8125}
+  },
   {
     "file": "game:itemtypes/tool/spear",
     "op": "replace",
-    "path": "/shapeByType",
-    "value": {
-      "@spear-generic-(chert|granite|andesite|basalt|obsidian|peridotite|flint)": {"base": "maltiezspears:vanilla/spear-stone"},
-      "@spear-generic-copper": {"base": "maltiezspears:vanilla/spear-metal"},
-      "@spear-generic-(tinbronze|bismuthbronze|blackbronze)": {"base": "maltiezspears:vanilla/spear-metal"},
-      "spear-scrap-scrap": {"base": "item/tool/spear/scrap"},
-      "spear-generic-hacking": {"base": "item/tool/spear/hacking"},
-      "spear-generic-ornategold": {"base": "item/tool/spear/ornategold"},
-      "spear-generic-ornatesilver": {"base": "item/tool/spear/ornatesilver"},
-      "*-ruined": {"base": "item/tool/spear/ruined/{type}"}
-    }
+    "path": "/shapeByType/@spear-generic-(chert|granite|andesite|basalt|obsidian|peridotite|flint)",
+    "value": {"base": "maltiezspears:vanilla/spear-stone"}
+  },
+  {
+    "file": "game:itemtypes/tool/spear",
+    "op": "replace",
+    "path": "/shapeByType/@spear-generic-(copper|tinbronze|bismuthbronze|blackbronze)",
+    "value": {"base": "maltiezspears:vanilla/spear-metal"}
   }
 ]

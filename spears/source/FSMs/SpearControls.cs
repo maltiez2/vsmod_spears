@@ -112,6 +112,7 @@ public abstract class SpearControls
 
     protected void CancelAttack(ItemSlot slot, IPlayer player)
     {
+        if (slot.Itemstack?.Item == null) return;
         Fsm.SetState(slot, (2, "idle"));
         OnCancelAttack(slot, player, GetStance(slot));
     }
@@ -346,7 +347,7 @@ public abstract class SpearControls
         return false;
     }
 
-    [InputHandler(states: new string[] { "twohanded-*-idle", "twohanded-*-block" }, "GripChange")]
+    [InputHandler(states: new string[] { "twohanded-*-idle" }, "GripChange")]
     protected bool ToggleGripToOnehanded(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         Console.WriteLine($"ToggleGripToOnehanded: {GetStance(slot)}");
@@ -356,7 +357,7 @@ public abstract class SpearControls
         OnStanceChange(slot, player, GetStance(slot));
         return true;
     }
-    [InputHandler(states: new string[] { "onehanded-*-idle", "onehanded-*-block" }, "GripChange")]
+    [InputHandler(states: new string[] { "onehanded-*-idle" }, "GripChange")]
     protected bool ToggleGripToTwohanded(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null || !player.Entity.LeftHandItemSlot.Empty) return false;

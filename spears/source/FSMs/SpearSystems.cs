@@ -1,14 +1,13 @@
 ﻿using AnimationManagerLib;
 using AnimationManagerLib.API;
 using MaltiezFSM.Framework.Simplified.Systems;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
-using Vintagestory.GameContent;
 
 namespace Spears;
 
@@ -70,7 +69,7 @@ public sealed class SpearAnimationSystem : BaseSystem
     {
         _clientApi = api;
         _animationSystem = api.ModLoader.GetModSystem<AnimationManagerLibSystem>();
-        
+
         _verticalTrackingAnimation = new("tracking", "spears-vertical-tracking", EnumAnimationBlendMode.AddAverage, weight: 1);
         _animationSystem.Register(_verticalTrackingAnimation, AnimationData.Player("spears-vertical-tracking"));
 
@@ -226,7 +225,7 @@ public sealed class SpearAttacksSystem : BaseSystem
             attackFinishedCallback?.Invoke();
             return true;
         }
-        
+
         if (result.Terrain != null && result.Terrain.Any() && terrainCollisionCallback?.Invoke() == true)
         {
             return true;
@@ -246,7 +245,7 @@ public sealed class SpearAttacksSystem : BaseSystem
             attackFinishedCallback?.Invoke();
             return true;
         }
-        
+
         if (result.Blocks.Length > 0 && terrainCollisionCallback?.Invoke() == true)
         {
             return true;
@@ -258,5 +257,176 @@ public sealed class SpearAttacksSystem : BaseSystem
         }
 
         return false;
+    }
+}
+
+public class AimingSystem
+{
+    private static readonly Random _rand = new();
+
+    private readonly float _dispersionMin;
+    private readonly float _dispersionMax;
+    private readonly TimeSpan _aimTime;
+    private readonly string _timeAttrName;
+    private readonly Dictionary<long, float> _aimingTimes = new();
+    private readonly Dictionary<long, float> _minDispersions = new();
+    private readonly Dictionary<long, float> _maxDispersions = new();
+    private bool _isAiming = false;
+    private readonly ICoreAPI _api;
+
+
+    public AimingSystem(float dispersionMin_MOA, float dispersionMax_MOA, TimeSpan duration, string attribute, ICoreAPI api)
+    {
+        _dispersionMin = dispersionMin_MOA;
+        _dispersionMax = dispersionMax_MOA;
+        _aimTime = duration;
+        _timeAttrName = "fsmlib." + attribute + ".timePassed";
+        _api = api;
+    }
+
+    public void Start(ItemSlot slot, IPlayer player)
+    {
+        player.Entity.Attributes.SetInt("aiming-noreticle", 1);
+        WriteStartTimeTo(slot, _api.World.ElapsedMilliseconds);
+        SetAimingTime(player);
+        SetDispersions(player);
+        _isAiming = true;
+    }
+    public void Stop(ItemSlot slot, IPlayer player)
+    {
+        player.Entity.Attributes.SetInt("aiming-noreticle", 0);
+        WriteStartTimeTo(slot, 0);
+        _isAiming = false;
+    }
+
+    public DirectionOffset GetShootingDirectionOffset(ItemSlot slot, IPlayer player)
+    {
+        long currentTime = _api.World.ElapsedMilliseconds;
+        float aimProgress = _isAiming ? Math.Clamp((currentTime - ReadStartTimeFrom(slot)) / _aimingTimes[player.Entity.EntityId], 0, 1) : 0;
+        float aimingInaccuracy = Math.Max(0.001f, 1f - player.Entity.Attributes.GetFloat("aimingAccuracy"));
+        float dispersion = GetDispersion(aimProgress, player) * aimingInaccuracy;
+        float randomPitch = (float)(2 * (_rand.NextDouble() - 0.5) * (Math.PI / 180 / 60) * dispersion);
+        float randomYaw = (float)(2 * (_rand.NextDouble() - 0.5) * (Math.PI / 180 / 60) * dispersion);
+        return new(Angle.FromDegrees(randomPitch), Angle.FromDegrees(randomYaw));
+    }
+    public TimeSpan GetAimingDuration(ItemSlot slot, IPlayer player)
+    {
+        long entityId = player.Entity.EntityId;
+        if (_aimingTimes.ContainsKey(entityId))
+        {
+            return TimeSpan.FromSeconds(_aimingTimes[entityId]);
+        }
+
+        return _aimTime;
+    }
+    private void SetAimingTime(IPlayer player)
+    {
+        long entityId = player.Entity.EntityId;
+        if (!_aimingTimes.ContainsKey(entityId)) _aimingTimes.Add(entityId, 0);
+        _aimingTimes[entityId] = (float)_aimTime.TotalSeconds;
+    }
+    private void SetDispersions(IPlayer player)
+    {
+        long entityId = player.Entity.EntityId;
+
+        if (!_minDispersions.ContainsKey(entityId)) _minDispersions.Add(entityId, 0);
+        _minDispersions[entityId] = _dispersionMin;
+
+        if (!_maxDispersions.ContainsKey(entityId)) _maxDispersions.Add(entityId, 0);
+        _maxDispersions[entityId] = _dispersionMax;
+    }
+    private float GetDispersion(float progress, IPlayer player)
+    {
+        long entityId = player.Entity.EntityId;
+
+        return Math.Max(0, _maxDispersions[entityId] - (_maxDispersions[entityId] - _minDispersions[entityId]) * progress);
+    }
+    private void WriteStartTimeTo(ItemSlot slot, long time)
+    {
+        slot?.Itemstack?.Attributes.SetLong(_timeAttrName, time);
+        slot?.MarkDirty();
+    }
+    private long ReadStartTimeFrom(ItemSlot slot)
+    {
+        long? startTime = slot?.Itemstack?.Attributes?.GetLong(_timeAttrName, 0);
+        return startTime == null || startTime == 0 ? _api.World.ElapsedMilliseconds : startTime.Value;
+    }
+}
+
+public class ProjectileSystem
+{
+    private readonly string _impactSound;
+    private readonly string _hitSound;
+    private readonly ICoreAPI _api;
+
+    public ProjectileSystem(ICoreAPI api, string impactSound = "game:sounds/arrow-impact", string hitSound = "game:sounds/player/projectilehit")
+    {
+        _impactSound = impactSound;
+        _hitSound = hitSound;
+        _api = api;
+    }
+
+    public void Spawn(ItemStack stack, IPlayer player, float speed, float damageMultiplier, DirectionOffset directionOffset)
+    {
+        for (int count = 0; count < stack.StackSize; count++)
+        {
+            Vec3d projectilePosition = ProjectilePosition(player, new Vec3f(0.0f, 0.0f, 0.0f));
+            Vec3d projectileVelocity = ProjectileVelocity(player, directionOffset, speed);
+            SpawnProjectile(stack, player, projectilePosition, projectileVelocity, damageMultiplier);
+        }
+    }
+    private static Vec3d ProjectilePosition(IPlayer player, Vec3f muzzlePosition)
+    {
+        Vec3f worldPosition = MaltiezFSM.Framework.Utils.FromCameraReferenceFrame(player.Entity, muzzlePosition);
+        return player.Entity.SidedPos.AheadCopy(0).XYZ.Add(worldPosition.X, player.Entity.LocalEyePos.Y + worldPosition.Y, worldPosition.Z);
+    }
+    private static Vec3d ProjectileVelocity(IPlayer player, DirectionOffset dispersion, float speed)
+    {
+        Vec3d pos = player.Entity.ServerPos.XYZ.Add(0, player.Entity.LocalEyePos.Y, 0);
+        Vec3d aheadPos = pos.AheadCopy(1, player.Entity.SidedPos.Pitch + dispersion.Pitch.Radians, player.Entity.SidedPos.Yaw + dispersion.Yaw.Radians);
+        return (aheadPos - pos).Normalize() * speed;
+    }
+    private void SpawnProjectile(ItemStack projectileStack, IPlayer player, Vec3d position, Vec3d velocity, float damageMultiplier)
+    {
+        if (projectileStack?.Item?.Code == null) return;
+
+        List<MaltiezFSM.Systems.ProjectileDamageType>? damageTypes = projectileStack.Collectible.GetBehavior<MaltiezFSM.Systems.AdvancedProjectileBehavior>()?.DamageTypes;
+
+        if (damageTypes == null || damageTypes.Count == 0)
+        {
+            return;
+        }
+
+        AssetLocation entityTypeAsset = new(projectileStack.Collectible.Attributes["projectile"].AsString(projectileStack.Collectible.Code.Path));
+
+        EntityProperties entityType = _api.World.GetEntityType(entityTypeAsset);
+
+        if (entityType == null)
+        {
+            return;
+        }
+
+
+        if (_api.ClassRegistry.CreateEntity(entityType) is not MaltiezFSM.Systems.AdvancedEntityProjectile projectile)
+        {
+            return;
+        }
+
+        projectile.FiredBy = player.Entity;
+        projectile.ProjectileStack = projectileStack;
+        projectile.DropOnImpactChance = 1 - projectileStack.Collectible.Attributes["breakChanceOnImpact"].AsFloat(0);
+        projectile.DamageStackOnImpact = true;
+        projectile.ServerPos.SetPos(position);
+        projectile.ServerPos.Motion.Set(velocity);
+        projectile.Pos.SetFrom(projectile.ServerPos);
+        projectile.World = _api.World;
+        projectile.SetRotation();
+
+        projectile.DamageTypes = damageTypes;
+        projectile.DamageMultiplier = damageMultiplier;
+        projectile.HitSound = _hitSound;
+        projectile.ImpactSound = _impactSound;
+
+        _api.World.SpawnEntity(projectile);
     }
 }

@@ -1,6 +1,6 @@
 {
 	"editor": {
-		"collapsedPaths": "Root/origin/handle,Root/origin/Large gear 2,Root/origin/Large gear 1,Root/Spear/Head,Root/origin/segment end",
+		"collapsedPaths": "Root/origin/handle,Root/Spear/Head,Root/origin/Large gear 2,Root/origin/Large gear 1,Root/origin/segment end",
 		"allAngles": false,
 		"entityTextureMode": false
 	},
@@ -15,11 +15,9 @@
 	"elements": [
 		{
 			"name": "Spear",
-			"from": [ 5.2, 0.4, -22.3 ],
-			"to": [ 5.2, 0.4, -22.3 ],
-			"rotationOrigin": [ -0.8, -0.1, -22.0 ],
-			"rotationX": 90.0,
-			"rotationZ": -90.0,
+			"from": [ 2.0, -0.25, 7.75 ],
+			"to": [ 2.0, -0.25, 7.75 ],
+			"rotationOrigin": [ 2.0, 0.0, 8.0 ],
 			"faces": {
 				"north": { "texture": "#shaft", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
 				"east": { "texture": "#shaft", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
@@ -96,6 +94,20 @@
 								"west": { "texture": "#shaft", "uv": [ 0.0, 0.0, 1.5, 1.5 ] },
 								"up": { "texture": "#shaft", "uv": [ 0.0, 7.5, 2.0, 9.0 ] },
 								"down": { "texture": "#shaft", "uv": [ 0.0, 0.0, 2.0, 1.5 ] }
+							}
+						},
+						{
+							"name": "shaft_4",
+							"from": [ -42.0, -0.5, -0.5 ],
+							"to": [ -40.0, 1.0, 1.0 ],
+							"rotationOrigin": [ -42.5, 0.0, 0.0 ],
+							"faces": {
+								"north": { "texture": "#shaft", "uv": [ 0.0, 11.5, 2.0, 13.0 ] },
+								"east": { "texture": "#shaft", "uv": [ 0.5, 11.5, 2.0, 13.0 ] },
+								"south": { "texture": "#shaft", "uv": [ 1.0, 11.5, 3.0, 13.0 ] },
+								"west": { "texture": "#shaft", "uv": [ 14.5, 2.5, 16.0, 4.0 ] },
+								"up": { "texture": "#shaft", "uv": [ 3.0, 11.5, 5.0, 13.0 ] },
+								"down": { "texture": "#shaft", "uv": [ 13.5, 11.5, 15.5, 13.0 ] }
 							}
 						}
 					]

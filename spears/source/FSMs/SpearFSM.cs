@@ -16,11 +16,13 @@ public sealed class SpearFsm : SpearControls
 
     public SpearFsm(ICoreAPI api, CollectibleObject collectible, SpearStats stats) : base(api, collectible, AimToHoldDelay)
     {
+        _api = api;
+
         if (api is ICoreClientAPI clientApi)
         {
-            _animationSystem = new(clientApi, debugName: "pike-animations");
+            _animationSystem = new(clientApi, debugName: "spear-animations");
             _attacksForDebugRendering = GetAttacks(stats, clientApi);
-            _attacksSystem = new(api, _animationSystem, _attacksForDebugRendering, debugName: "pike-attacks");
+            _attacksSystem = new(api, _animationSystem, _attacksForDebugRendering, debugName: "spear-attacks");
 
             _animationSystem.RegisterAnimations(GetAnimations(stats));
 
@@ -40,8 +42,13 @@ public sealed class SpearFsm : SpearControls
         }
         else
         {
-            _attacksSystem = new(api, _animationSystem, GetAttacks(stats, api), debugName: "pike-attacks");
+            _attacksSystem = new(api, _animationSystem, GetAttacks(stats, api), debugName: "spear-attacks");  
         }
+
+        _blockParameters = BlockParameters.FrontBlock(api, stats.BlockDamageReduction, new(stats.BlockSound), new(stats.PerfectBlockSound), null, TimeSpan.FromMilliseconds(stats.PerfectBlockWindowMs));
+
+        _aimingSystem = new(stats.DispersionMin, stats.DispersionMax, TimeSpan.FromMilliseconds(stats.AimDuration), "spear-aiming", api);
+        _projectileSystem = new(api);
 
         _stats = stats;
     }
@@ -49,6 +56,11 @@ public sealed class SpearFsm : SpearControls
     public bool ChangeGrip(ItemSlot slot, IPlayer player, float delta)
     {
         StanceType stance = GetStance(slot);
+        if (stance == StanceType.OneHandedUpper)
+        {
+            _animationSystem?.ResetGrip(player);
+            return false;
+        }
         bool oneHanded = stance == StanceType.OneHandedLower || stance == StanceType.OneHandedUpper;
         _grip = GameMath.Clamp(_grip + delta * _gripFactor, oneHanded ? _stats.GripMinLength1h : _stats.GripMinLength2h, oneHanded ? _stats.GripMaxLength1h : _stats.GripMaxLength2h);
         _animationSystem?.SetGrip(player, _grip);
@@ -75,7 +87,13 @@ public sealed class SpearFsm : SpearControls
     private readonly TimeSpan _easeOutTime = TimeSpan.FromSeconds(0.6);
     private readonly CollisionEffects _headCollisionEffects = new();
     private readonly CollisionEffects _shaftCollisionEffects = new();
+    private readonly AimingSystem? _aimingSystem;
+    private readonly ProjectileSystem? _projectileSystem;
+    private readonly ICoreAPI _api;
+    private readonly BlockParameters _blockParameters;
     private const float _gripFactor = 0.1f;
+    private const int _throwDurationMs = 300;
+    private const int _terrainHitCooldownMs = 500;
     private float _grip = 0;
 
     protected override bool OnStartAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
@@ -101,24 +119,29 @@ public sealed class SpearFsm : SpearControls
                 terrainCollisionCallback: () => OnTerrainHit(slot, player),
                 entityCollisionCallback: () => OnEntityHit(slot, player));
         }
-        
+
         return true;
     }
     protected override bool OnStartBlock(ItemSlot slot, IPlayer player, StanceType stanceType, bool attacking)
     {
         if (attacking) CancelAttack(slot, player);
         _animationSystem?.Play(player, GetBlockAnimationType(stanceType));
+        BeginBlock(slot, player);
         return true;
     }
     protected override bool OnStartAim(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         CancelAttack(slot, player);
         _animationSystem?.Play(player, SpearAnimationSystem.AnimationType.Aim);
+        _aimingSystem?.Start(slot, player);
         return true;
     }
     protected override bool OnStartThrow(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         _animationSystem?.Play(player, SpearAnimationSystem.AnimationType.Throw);
+
+        _api.World.RegisterCallback((dt) => Throw(slot, player, stanceType), millisecondDelay: _throwDurationMs);
+
         return true;
     }
 
@@ -135,10 +158,12 @@ public sealed class SpearFsm : SpearControls
             _grip = 0;
         }
         _animationSystem?.Play(player, GetStanceAnimationType(stanceType));
+        EndBlock(slot, player);
     }
     protected override void OnCancelAim(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         _animationSystem?.Play(player, GetStanceAnimationType(stanceType));
+        _aimingSystem?.Stop(slot, player);
     }
 
     protected override void OnStanceChange(ItemSlot slot, IPlayer player, StanceType newStance)
@@ -155,6 +180,7 @@ public sealed class SpearFsm : SpearControls
         player.Entity.Stats.Remove("walkspeed", "maltiezspears");
         _animationSystem?.EaseOut(player, _easeOutTime);
         _animationSystem?.ResetGrip(player);
+        EndBlock(slot, player);
         _grip = 0;
     }
     protected override void OnSelected(ItemSlot slot, IPlayer player)
@@ -178,9 +204,45 @@ public sealed class SpearFsm : SpearControls
     }
     private bool OnTerrainHit(ItemSlot slot, IPlayer player)
     {
-        CancelAttack(slot, player);
+        _attacksSystem?.Stop(GetAttackAnimationType(GetStance(slot)), player);
+        _animationSystem?.Play(player, GetStanceAnimationType(GetStance(slot)));
         slot.Itemstack.Item.DamageItem(player.Entity.World, player.Entity, slot, _stats.DurabilitySpentOnTerrainHit);
+
+        _api.World.RegisterCallback((dt) => CancelAttack(slot, player), millisecondDelay: _terrainHitCooldownMs);
+
         return true;
+    }
+
+    private void Throw(ItemSlot slot, IPlayer player, StanceType stanceType)
+    {
+        if (slot.Itemstack?.Item == null) return;
+        
+        if (_aimingSystem != null && _projectileSystem != null)
+        {
+            DirectionOffset offset = _aimingSystem.GetShootingDirectionOffset(slot, player);
+            _projectileSystem.Spawn(slot.TakeOutWhole(), player, _stats.ProjectileSpeed, _stats.ThrowDamageMultiplier, offset);
+            _aimingSystem.Stop(slot, player);
+        }
+        else
+        {
+            _ = slot.TakeOutWhole();
+        }
+    }
+    private void BeginBlock(ItemSlot slot, IPlayer player)
+    {
+        if (player.Entity.GetBehavior<BlockAgainstDamage>() is not BlockAgainstDamage behavior) return;
+
+        Console.WriteLine("Start block");
+
+        behavior.Start(_blockParameters);
+    }
+    private void EndBlock(ItemSlot slot, IPlayer player)
+    {
+        if (player.Entity.GetBehavior<BlockAgainstDamage>() is not BlockAgainstDamage behavior) return;
+
+        Console.WriteLine("Stop block");
+
+        behavior.Stop();
     }
 
     #region Attacks
@@ -341,7 +403,7 @@ public sealed class SpearFsm : SpearControls
             StanceType.TwoHandedLower => SpearAnimationSystem.AnimationType.Low2hBlock,
             StanceType.BlockLower => SpearAnimationSystem.AnimationType.Low2hBlock,
             StanceType.BlockUpper => SpearAnimationSystem.AnimationType.High2hBlock,
-            _ => throw new NotImplementedException()
+            _ => SpearAnimationSystem.AnimationType.High2hBlock
         };
     }
 
@@ -369,73 +431,73 @@ public sealed class SpearFsm : SpearControls
         {
             SpearAnimationSystem.AnimationType.High2hAttack => new(
                 "spear-high-2h",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 0, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 1, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 0, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDuration2hMs), 0, ProgressModifierType.Sqrt),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDuration2hMs), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDuration2hMs), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.Low2hAttack => new(
                 "spear-low-2h",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 0, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 1, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 0, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDuration2hMs), 0, ProgressModifierType.SqrtSqrt),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDuration2hMs), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDuration2hMs), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.Low1hAttack => new(
                 "spear-low-1h",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 0, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 1, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 0, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDuration1hMs), 0, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDuration1hMs), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDuration1hMs), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.High1hAttack => new(
                 "spear-high-1h",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 0, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 1, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 0, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDuration1hMs), 0, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDuration1hMs), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDuration1hMs), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.Low2hBlockAttack => new(
                 "spear-low-block",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 0, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 1, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 0, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDurationBlockMs), 0, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDurationBlockMs), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDurationBlockMs), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.High2hBlockAttack => new(
                 "spear-high-block",
-               RunParameters.EaseIn(TimeSpan.FromMilliseconds(400), 0, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(300), 1, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(600), 0, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDurationBlockMs), 0, ProgressModifierType.Bounce),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDurationBlockMs), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDurationBlockMs), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.Aim => new(
                 "spear-throw",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 0, ProgressModifierType.Linear)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 0, ProgressModifierType.SqrtSqrt)
                 ),
             SpearAnimationSystem.AnimationType.Throw => new(
                 "spear-throw",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 1, ProgressModifierType.Linear)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(_throwDurationMs), 1, ProgressModifierType.Cubic)
                 ),
 
             SpearAnimationSystem.AnimationType.Low2hBlock => new(
                 "spear-2h-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 2, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 2, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.High2hBlock => new(
                 "spear-2h-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 3, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 3, ProgressModifierType.Bounce)
                 ),
 
             SpearAnimationSystem.AnimationType.Low2hStance => new(
                 "spear-2h-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 0, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.High2hStance => new(
                 "spear-2h-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 1, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 1, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.Low1hStance => new(
                 "spear-1h-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 0, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.High1hStance => new(
                 "spear-1h-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(1000), 1, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 1, ProgressModifierType.Bounce)
                 ),
             _ => null
         };
@@ -501,5 +563,20 @@ public sealed class SpearStats
     #region Durability
     public int DurabilitySpentOnEntityHit { get; set; } = 1;
     public int DurabilitySpentOnTerrainHit { get; set; } = 1;
+    #endregion
+
+    #region Throw
+    public float ProjectileSpeed { get; set; } = 1;
+    public float DispersionMin { get; set; } = 0;
+    public float DispersionMax { get; set; } = 0;
+    public float AimDuration { get; set; } = 0;
+    public float ThrowDamageMultiplier { get; set; } = 1;
+    #endregion
+
+    #region Block
+    public float BlockDamageReduction { get; set; } = 0;
+    public string? BlockSound { get; set; } = null;
+    public string? PerfectBlockSound { get; set; } = null;
+    public float PerfectBlockWindowMs { get; set; } = 0;
     #endregion
 }

@@ -9,12 +9,12 @@
     "item-javelin-plain-iron": "(WIP) Javelin (iron)",
     "item-javelin-plain-steel": "(WIP) Javelin (steel)",
 
-    "item-spear-plain-copper": "(WIP) Spear (copper)",
-    "item-spear-plain-tinbronze": "(WIP) Spear (tin bronze)",
-    "item-spear-plain-bismuthbronze": "(WIP) Spear (bismuth bronze)",
-    "item-spear-plain-blackbronze": "(WIP) Spear (black bronze)",
-    "item-spear-plain-iron": "(WIP) Spear (iron)",
-    "item-spear-plain-steel": "(WIP) Spear (steel)",
+    "item-spear-plain-copper": "Spear (copper)",
+    "item-spear-plain-tinbronze": "Spear (tin bronze)",
+    "item-spear-plain-bismuthbronze": "Spear (bismuth bronze)",
+    "item-spear-plain-blackbronze": "Spear (black bronze)",
+    "item-spear-plain-iron": "Spear (iron)",
+    "item-spear-plain-steel": "Spear (steel)",
 
     "item-pike-plain-tinbronze": "Pike (tinbronze)",
     "item-pike-plain-bismuthbronze": "Pike (bismuthbronze)",
@@ -43,5 +43,6 @@
     "item-head-pike-plain-iron": "Pike head (iron)",
     "item-head-pike-plain-steel": "Pike head (steel)",
 
-    "itemdesc-pike-plain-*": "On terrain hit attack stops and red particle spanws. On entity hit with pike-head orange particle is spawned and full damage is dealt. On entity hit with pike shaft white particle spawned and only 0.5 damage is dealt.<br/><br/>Slows down by 20% when ready, carry it on shoulder to not receive walk speed debuf.<br/><br/>Controls: <br/>  R to change stance (high/low)<br/>  F to ready/put on shoulder<br/>  RMB + MouseWheel to chage grip"
+    "itemdesc-pike-plain-*": "On terrain hit attack stops and red particle spanws. On entity hit with pike-head orange particle is spawned and full damage is dealt. On entity hit with pike shaft white particle spawned and only 0.5 damage is dealt.<br/><br/>Slows down by 20% when ready, carry it on shoulder to not receive walk speed debuf.<br/><br/>Controls: <br/>  R to change stance (high/low)<br/>  F to ready/put on shoulder<br/>  RMB + MouseWheel to chage grip length",
+    "itemdesc-spear-plain-*": "On terrain hit attack stops and red particle spanws. On entity hit with pike-head orange particle is spawned and full damage is dealt. On entity hit with pike shaft white particle spawned and only 0.5 damage is dealt.<br/><br/>RMB while two-handed starts block (block 25% of incomming damage). If you block right before you receive damage block becomes perfect block and negates damage completely. Attack from block applies greater knockback effect but deals only 1 damage.<br/><br/>Controls: <br/>  R to change stance (high/low)<br/>  F to change grip (one-handed/two-handed)<br/>  RMB + MouseWheel to chage grip length<br/>  Hold LMB to throw"
 }
