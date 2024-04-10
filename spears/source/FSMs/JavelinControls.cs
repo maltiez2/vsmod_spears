@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using Vintagestory.API.Common;
 
-namespace Spears;
+namespace Javelins;
 
-public abstract class PikeControls
+public abstract class JavelinControls
 {
-    protected PikeControls(ICoreAPI api, CollectibleObject collectible)
+    protected JavelinControls(ICoreAPI api, CollectibleObject collectible, TimeSpan aimDelay)
     {
-        Fsm = new FiniteStateMachineAttributesBased(api, States, "shoulder-idle");
+        Fsm = new FiniteStateMachineAttributesBased(api, _states, "onehanded-upper-idle");
 
         BaseInputProperties inputProperties = new()
         {
@@ -26,15 +26,16 @@ public abstract class PikeControls
         RightMouseUp = new(api, "rmb-up", collectible, new(EnumEntityAction.RightMouseDown) { OnRelease = true });
         LeftMouseUp = new(api, "lmb-up", collectible, new(EnumEntityAction.LeftMouseDown) { OnRelease = true });
         StanceChange = new(api, "stance", collectible, Vintagestory.API.Client.GlKeys.R);
-        GripChange = new(api, "grip", collectible, Vintagestory.API.Client.GlKeys.F);
         ItemDropped = new(api, "dropped", collectible, ISlotContentInput.SlotEventType.AllTaken);
         SlotDeselected = new(api, "deselected", collectible);
-        ItemAdded = new(api, "added", collectible, ISlotContentInput.SlotEventType.AfterModified);
-        SlotSelected = new(api, "selected", collectible, ISlotInput.SlotEventType.ToSlot);
+        ItemAdded = new(api, "dropped", collectible, ISlotContentInput.SlotEventType.AfterModified);
+        SlotSelected = new(api, "deselected", collectible, ISlotInput.SlotEventType.ToSlot);
+        Aim = new(api, "aim", collectible, new(EnumEntityAction.LeftMouseDown) { Delay = aimDelay }, inputProperties);
+
 
         ActionInputProperties interruptActions = new(
             EnumEntityAction.Sneak,
-            EnumEntityAction.Sprint,
+            //EnumEntityAction.Sprint,
             EnumEntityAction.Jump,
             EnumEntityAction.Glide,
             EnumEntityAction.FloorSit
@@ -50,7 +51,7 @@ public abstract class PikeControls
         EntityControls controls = player.Entity.Controls;
 
         if (controls.Sneak) return false;
-        if (controls.Sprint) return false;
+        if (controls.Sprint && controls.Backward) return false;
         if (controls.FloorSitting) return false;
         if (controls.Gliding) return false;
         if (controls.Jump) return false;
@@ -60,9 +61,8 @@ public abstract class PikeControls
 
     protected enum StanceType
     {
-        Upper,
-        Lower,
-        Shoulder
+        OneHandedUpper,
+        OneHandedLower
     };
 
     protected virtual void OnDeselected(ItemSlot slot, IPlayer player)
@@ -73,6 +73,14 @@ public abstract class PikeControls
     {
 
     }
+    protected virtual bool OnStartThrow(ItemSlot slot, IPlayer player, StanceType stanceType)
+    {
+        return false;
+    }
+    protected virtual bool OnStartAim(ItemSlot slot, IPlayer player, StanceType stanceType)
+    {
+        return false;
+    }
     protected virtual bool OnStartAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         return false;
@@ -81,47 +89,61 @@ public abstract class PikeControls
     {
 
     }
+    protected virtual void OnCancelAim(ItemSlot slot, IPlayer player, StanceType stanceType)
+    {
+    }
     protected virtual void OnStanceChange(ItemSlot slot, IPlayer player, StanceType newStance)
     {
 
     }
+
     protected void CancelAttack(ItemSlot slot, IPlayer player)
     {
-        Fsm.SetState(slot, (1, "idle"));
+        if (slot.Itemstack?.Item == null) return;
+        Fsm.SetState(slot, (2, "idle"));
         OnCancelAttack(slot, player, GetStance(slot));
+    }
+    protected void CancelAim(ItemSlot slot, IPlayer player)
+    {
+        Fsm.SetState(slot, (2, "idle"));
+        OnCancelAim(slot, player, GetStance(slot));
     }
 
     protected StanceType GetStance(ItemSlot slot)
     {
-        if (Fsm.CheckState(slot, 0, "lower")) return StanceType.Lower;
-        if (Fsm.CheckState(slot, 0, "upper")) return StanceType.Upper;
-        return StanceType.Shoulder;
-    }
-    protected bool Attacking(ItemSlot slot) => Fsm.CheckState(slot, 1, "attack");
-    protected bool EnsureStance(ItemSlot slot, IPlayer player)
-    {
-        bool shoulder = Fsm.CheckState(slot, 0, "shoulder");
-        if (player.Entity.LeftHandItemSlot.Empty || shoulder) return true;
+        bool lowerGrip = Fsm.CheckState(slot, 1, "lower");
 
-        Fsm.SetState(slot, (0, "shoulder"));
-        OnStanceChange(slot, player, GetStance(slot));
-        return false;
+        if (lowerGrip)
+        {
+            return StanceType.OneHandedLower;
+        }
+        else
+        {
+            return StanceType.OneHandedUpper;
+        }
     }
+    protected bool Attacking(ItemSlot slot) => Fsm.CheckState(slot, 2, "attack");
+    protected bool Aiming(ItemSlot slot) => Fsm.CheckState(slot, 2, "aim");
+    protected bool Idle(ItemSlot slot) => Fsm.CheckState(slot, 2, "idle");
 
     #region FSM
     protected IFiniteStateMachineAttributesBased Fsm;
-    private static readonly List<HashSet<string>> States = new()
+    private static readonly List<HashSet<string>> _states = new()
     {
+        new() // Grip
+        {
+            "onehanded"
+        },
         new() // Stance
         {
             "lower",
-            "upper",
-            "shoulder"
+            "upper"
         },
         new() // Action
         {
             "idle",
-            "attack"
+            "attack",
+            "aim"
         }
     };
 
@@ -136,7 +158,7 @@ public abstract class PikeControls
     [Input]
     protected KeyboardKey StanceChange { get; }
     [Input]
-    protected KeyboardKey GripChange { get; }
+    protected ActionInput Aim { get; }
 
     [Input]
     protected SlotContent ItemDropped { get; }
@@ -149,81 +171,94 @@ public abstract class PikeControls
     [Input]
     protected ActionInput InterruptAction { get; }
 
-    [InputHandler(state: "*-*", "ItemDropped", "SlotDeselected")]
+    [InputHandler(state: "*-*-*", "ItemDropped", "SlotDeselected")]
     protected bool Deselected(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
-        Fsm.SetState(slot, (1, "idle"));
+        Fsm.SetState(slot, (2, "idle"));
         OnDeselected(slot, player);
         return false;
     }
-    [InputHandler(state: "*-*", "ItemAdded", "SlotSelected")]
+    [InputHandler(state: "*-*-*", "ItemAdded", "SlotSelected")]
     protected bool Selected(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
-        Fsm.SetState(slot, (1, "idle"));
-        EnsureStance(slot, player);
+        Fsm.SetState(slot, (2, "idle"));
         OnSelected(slot, player);
         return false;
     }
 
-    [InputHandler(states: new string[] { "lower-idle", "upper-idle" }, "LeftMouseDown")]
+    [InputHandler(state: "*-*-aim", "LeftMouseUp")]
+    protected bool StartThrow(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    {
+        if (player == null) return false;
+        if (!CanAttack(player)) return false;
+
+        OnStartThrow(slot, player, GetStance(slot));
+
+        return false;
+    }
+    [InputHandler(state: "*-*-*", "Aim")]
+    protected bool StartAim(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    {
+        if (player == null) return false;
+        if (!CanAttack(player)) return false;
+
+        if (OnStartAim(slot, player, GetStance(slot)))
+        {
+            Fsm.SetState(slot, (2, "aim"));
+            return true;
+        }
+
+        return false;
+    }
+    [InputHandler(state: "*-*-aim", "RightMouseDown", "StanceChange", "InterruptAction")]
+    protected bool CancelAim(ItemSlot slot, IPlayer? player, IInput input, IState state)
+    {
+        if (player == null) return false;
+        Fsm.SetState(slot, (2, "idle"));
+        OnCancelAim(slot, player, GetStance(slot));
+        return false;
+    }
+
+    [InputHandler(state: "*-*-idle", "LeftMouseDown")]
     protected bool StartAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
-        if (!EnsureStance(slot, player)) return false;
         if (!CanAttack(player)) return false;
         if (OnStartAttack(slot, player, GetStance(slot)))
         {
-            Fsm.SetState(slot, (1, "attack"));
+            Fsm.SetState(slot, (2, "attack"));
             return true;
         }
         return false;
     }
-    [InputHandler(state: "*-attack", "InterruptAction")]
+    [InputHandler(state: "*-*-attack", "InterruptAction")]
     protected bool CancelAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
-        Fsm.SetState(slot, (1, "idle"));
+        Fsm.SetState(slot, (2, "idle"));
         OnCancelAttack(slot, player, GetStance(slot));
         return false;
     }
 
-    [InputHandler(state: "lower-idle", "StanceChange")]
+    [InputHandler(state: "*-lower-idle", "StanceChange")]
     protected bool ToggleStanceToLower(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
         if (!CanAttack(player)) return false;
-        Fsm.SetState(slot, (0, "upper"));
+        Fsm.SetState(slot, (1, "upper"));
         OnStanceChange(slot, player, GetStance(slot));
         return false;
     }
-    [InputHandler(state: "upper-idle", "StanceChange")]
+    [InputHandler(state: "*-upper-idle", "StanceChange")]
     protected bool ToggleStanceToUpper(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
         if (player == null) return false;
         if (!CanAttack(player)) return false;
-        Fsm.SetState(slot, (0, "lower"));
+        Fsm.SetState(slot, (1, "lower"));
         OnStanceChange(slot, player, GetStance(slot));
         return false;
-    }
-
-    [InputHandler(states: new string[] { "lower-idle", "upper-idle" }, "GripChange", "InterruptAction")]
-    protected bool PutOnShoulder(ItemSlot slot, IPlayer? player, IInput input, IState state)
-    {
-        if (player == null) return false;
-        Fsm.SetState(slot, (0, "shoulder"));
-        OnStanceChange(slot, player, GetStance(slot));
-        return true;
-    }
-    [InputHandler(state: "shoulder-*", "GripChange")]
-    protected bool TakeFromShoulder(ItemSlot slot, IPlayer? player, IInput input, IState state)
-    {
-        if (player == null || !player.Entity.LeftHandItemSlot.Empty) return false;
-        if (!CanAttack(player)) return false;
-        Fsm.SetState(slot, (0, "lower"));
-        OnStanceChange(slot, player, GetStance(slot));
-        return true;
     }
     #endregion
 }

@@ -2,7 +2,7 @@
   {
     "ingredientPattern": "KSH",
     "ingredients": {
-      "S": {"type": "item", "code": "game:debarkedlog-*", "quantity": 2},
+      "S": {"type": "block", "code": "game:debarkedlog-*", "quantity": 2},
       "K": { "type": "item", "code": "game:saw-*", "isTool": true  },
       "H": {"type": "item", "code": "maltiezspears:head-pike-plain-*", "quantity": 1, "name": "material", "allowedVariants": ["tinbronze", "bismuthbronze", "blackbronze", "iron", "steel"]}
     },
@@ -13,7 +13,7 @@
   {
     "ingredientPattern": "KSH",
     "ingredients": {
-      "S": {"type": "item", "code": "game:debarkedlog-*", "quantity": 1},
+      "S": {"type": "block", "code": "game:debarkedlog-*", "quantity": 1},
       "K": { "type": "item", "code": "game:saw-*", "isTool": true  },
       "H": {"type": "item", "code": "maltiezspears:head-spear-plain-*", "quantity": 1, "name": "material", "allowedVariants": ["tinbronze", "bismuthbronze", "blackbronze", "iron", "steel"]}
     },

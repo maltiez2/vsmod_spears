@@ -1,28 +1,28 @@
 ﻿using AnimationManagerLib.API;
 using MaltiezFSM;
 using MaltiezFSM.Framework.Simplified.Systems;
+using Spears;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.MathTools;
 
-namespace Spears;
+namespace Javelins;
 
-public sealed class SpearFsm : SpearControls
+public sealed class JavelinFsm : JavelinControls
 {
     public static readonly TimeSpan AimToHoldDelay = TimeSpan.FromSeconds(0.5);
 
-    public SpearFsm(ICoreAPI api, CollectibleObject collectible, SpearStats stats) : base(api, collectible, AimToHoldDelay)
+    public JavelinFsm(ICoreAPI api, CollectibleObject collectible, JavelinStats stats) : base(api, collectible, AimToHoldDelay)
     {
         _api = api;
 
         if (api is ICoreClientAPI clientApi)
         {
-            _animationSystem = new(clientApi, debugName: "spear-animations");
+            _animationSystem = new(clientApi, debugName: "javelin-animations");
             _attacksForDebugRendering = GetAttacks(stats, clientApi);
-            _attacksSystem = new(api, _animationSystem, _attacksForDebugRendering, debugName: "spear-attacks");
+            _attacksSystem = new(api, _animationSystem, _attacksForDebugRendering, debugName: "javelin-attacks");
 
             _animationSystem.RegisterAnimations(GetAnimations(stats));
 
@@ -42,29 +42,13 @@ public sealed class SpearFsm : SpearControls
         }
         else
         {
-            _attacksSystem = new(api, _animationSystem, GetAttacks(stats, api), debugName: "spear-attacks");  
+            _attacksSystem = new(api, _animationSystem, GetAttacks(stats, api), debugName: "javelin-attacks");
         }
 
-        _blockParameters = BlockParameters.FrontBlock(api, stats.BlockDamageReduction, new(stats.BlockSound), new(stats.PerfectBlockSound), null, TimeSpan.FromMilliseconds(stats.PerfectBlockWindowMs));
-
-        _aimingSystem = new(stats.DispersionMin, stats.DispersionMax, TimeSpan.FromMilliseconds(stats.AimDuration), "spear-aiming", api);
+        _aimingSystem = new(stats.DispersionMin, stats.DispersionMax, TimeSpan.FromMilliseconds(stats.AimDuration), "javelin-aiming", api);
         _projectileSystem = new(api);
 
         _stats = stats;
-    }
-
-    public bool ChangeGrip(ItemSlot slot, IPlayer player, float delta)
-    {
-        StanceType stance = GetStance(slot);
-        if (stance == StanceType.OneHandedUpper)
-        {
-            _animationSystem?.ResetGrip(player);
-            return false;
-        }
-        bool oneHanded = stance == StanceType.OneHandedLower || stance == StanceType.OneHandedUpper;
-        _grip = GameMath.Clamp(_grip + delta * _gripFactor, oneHanded ? _stats.GripMinLength1h : _stats.GripMinLength2h, oneHanded ? _stats.GripMaxLength1h : _stats.GripMaxLength2h);
-        _animationSystem?.SetGrip(player, _grip);
-        return true;
     }
 
     #region Debug render
@@ -83,50 +67,27 @@ public sealed class SpearFsm : SpearControls
 
     private readonly SpearAnimationSystem? _animationSystem;
     private readonly SpearAttacksSystem? _attacksSystem;
-    private readonly SpearStats _stats;
+    private readonly JavelinStats _stats;
     private readonly TimeSpan _easeOutTime = TimeSpan.FromSeconds(0.6);
     private readonly CollisionEffects _headCollisionEffects = new();
     private readonly CollisionEffects _shaftCollisionEffects = new();
     private readonly AimingSystem? _aimingSystem;
     private readonly ProjectileSystem? _projectileSystem;
     private readonly ICoreAPI _api;
-    private readonly BlockParameters _blockParameters;
-    private const float _gripFactor = 0.1f;
     private const int _throwDurationMs = 300;
     private const int _terrainHitCooldownMs = 500;
-    private float _grip = 0;
 
     protected override bool OnStartAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         _lastAttack = GetAttackAnimationType(stanceType);
-        if (stanceType == StanceType.BlockUpper || stanceType == StanceType.BlockLower)
-        {
-            _attacksSystem?.Start(
-                GetAttackAnimationType(stanceType),
-                player,
-                slot,
-                attackFinishedCallback: () => OnBlockAttackFinished(slot, player, stanceType),
-                terrainCollisionCallback: () => OnTerrainHit(slot, player),
-                entityCollisionCallback: () => OnEntityHit(slot, player));
-        }
-        else
-        {
-            _attacksSystem?.Start(
+        _attacksSystem?.Start(
                 GetAttackAnimationType(stanceType),
                 player,
                 slot,
                 attackFinishedCallback: () => OnAttackFinished(slot, player, stanceType),
                 terrainCollisionCallback: () => OnTerrainHit(slot, player),
                 entityCollisionCallback: () => OnEntityHit(slot, player));
-        }
 
-        return true;
-    }
-    protected override bool OnStartBlock(ItemSlot slot, IPlayer player, StanceType stanceType, bool attacking)
-    {
-        if (attacking) CancelAttack(slot, player);
-        _animationSystem?.Play(player, GetBlockAnimationType(stanceType));
-        BeginBlock(slot, player);
         return true;
     }
     protected override bool OnStartAim(ItemSlot slot, IPlayer player, StanceType stanceType)
@@ -150,16 +111,6 @@ public sealed class SpearFsm : SpearControls
         _attacksSystem?.Stop(GetAttackAnimationType(stanceType), player);
         _animationSystem?.Play(player, GetStanceAnimationType(stanceType));
     }
-    protected override void OnCancelBlock(ItemSlot slot, IPlayer player, StanceType stanceType, bool attacking)
-    {
-        if (stanceType == StanceType.OneHandedUpper)
-        {
-            _animationSystem?.ResetGrip(player, TimeSpan.FromSeconds(0.5));
-            _grip = 0;
-        }
-        _animationSystem?.Play(player, GetStanceAnimationType(stanceType));
-        EndBlock(slot, player);
-    }
     protected override void OnCancelAim(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         _animationSystem?.Play(player, GetStanceAnimationType(stanceType));
@@ -168,20 +119,12 @@ public sealed class SpearFsm : SpearControls
 
     protected override void OnStanceChange(ItemSlot slot, IPlayer player, StanceType newStance)
     {
-        if (newStance == StanceType.OneHandedUpper)
-        {
-            _animationSystem?.ResetGrip(player, TimeSpan.FromSeconds(0.5));
-            _grip = 0;
-        }
         _animationSystem?.Play(player, GetStanceAnimationType(newStance));
     }
     protected override void OnDeselected(ItemSlot slot, IPlayer player)
     {
         player.Entity.Stats.Remove("walkspeed", "maltiezspears");
-        _animationSystem?.EaseOut(player, _easeOutTime);
-        _animationSystem?.ResetGrip(player);
-        EndBlock(slot, player);
-        _grip = 0;
+        _animationSystem?.EaseOut(player, _easeOutTime, SpearAnimationSystem.AnimationType.Low1hStance);
     }
     protected override void OnSelected(ItemSlot slot, IPlayer player)
     {
@@ -191,11 +134,6 @@ public sealed class SpearFsm : SpearControls
     private void OnAttackFinished(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         CancelAttack(slot, player);
-    }
-    private void OnBlockAttackFinished(ItemSlot slot, IPlayer player, StanceType stanceType)
-    {
-        CancelAttack(slot, player);
-        StartBlock(slot, player);
     }
     private bool OnEntityHit(ItemSlot slot, IPlayer player)
     {
@@ -216,7 +154,7 @@ public sealed class SpearFsm : SpearControls
     private void Throw(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         if (slot.Itemstack?.Item == null) return;
-        
+
         if (_aimingSystem != null && _projectileSystem != null)
         {
             DirectionOffset offset = _aimingSystem.GetShootingDirectionOffset(slot, player);
@@ -228,21 +166,9 @@ public sealed class SpearFsm : SpearControls
             _ = slot.TakeOutWhole();
         }
     }
-    private void BeginBlock(ItemSlot slot, IPlayer player)
-    {
-        if (player.Entity.GetBehavior<BlockAgainstDamage>() is not BlockAgainstDamage behavior) return;
-
-        behavior.Start(_blockParameters);
-    }
-    private void EndBlock(ItemSlot slot, IPlayer player)
-    {
-        if (player.Entity.GetBehavior<BlockAgainstDamage>() is not BlockAgainstDamage behavior) return;
-
-        behavior.Stop();
-    }
 
     #region Attacks
-    private Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack> GetAttacks(SpearStats stats, ICoreAPI api)
+    private Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack> GetAttacks(JavelinStats stats, ICoreAPI api)
     {
         Dictionary<SpearAnimationSystem.AnimationType, MeleeAttack> result = new();
 
@@ -254,7 +180,7 @@ public sealed class SpearFsm : SpearControls
 
         return result;
     }
-    private MeleeAttack? GetAttack(SpearAnimationSystem.AnimationType attackType, SpearStats stats, ICoreAPI api)
+    private MeleeAttack? GetAttack(SpearAnimationSystem.AnimationType attackType, JavelinStats stats, ICoreAPI api)
     {
         List<MeleeAttackDamageType> damageTypes = new();
         MeleeAttackDamageType? headDamage = GetHeadDamageType(attackType, stats);
@@ -264,44 +190,21 @@ public sealed class SpearFsm : SpearControls
 
         return new MeleeAttack(api as ICoreClientAPI, GetAttackDuration(attackType, stats), damageTypes, stats.MaxReach);
     }
-    private static TimeSpan GetAttackDuration(SpearAnimationSystem.AnimationType attackType, SpearStats stats)
+    private static TimeSpan GetAttackDuration(SpearAnimationSystem.AnimationType attackType, JavelinStats stats)
     {
         switch (attackType)
         {
             case SpearAnimationSystem.AnimationType.Low1hAttack:
             case SpearAnimationSystem.AnimationType.High1hAttack:
                 return TimeSpan.FromMilliseconds(stats.AttackDuration1hMs);
-
-            case SpearAnimationSystem.AnimationType.Low2hAttack:
-            case SpearAnimationSystem.AnimationType.High2hAttack:
-                return TimeSpan.FromMilliseconds(stats.AttackDuration2hMs);
-
-            case SpearAnimationSystem.AnimationType.Low1hBlockAttack:
-            case SpearAnimationSystem.AnimationType.High1hBlockAttack:
-            case SpearAnimationSystem.AnimationType.Low2hBlockAttack:
-            case SpearAnimationSystem.AnimationType.High2hBlockAttack:
-                return TimeSpan.FromMilliseconds(stats.AttackDurationBlockMs);
-
             default:
                 return TimeSpan.Zero;
         }
     }
-    private MeleeAttackDamageType? GetHeadDamageType(SpearAnimationSystem.AnimationType attackType, SpearStats stats)
+    private MeleeAttackDamageType? GetHeadDamageType(SpearAnimationSystem.AnimationType attackType, JavelinStats stats)
     {
         switch (attackType)
         {
-            case SpearAnimationSystem.AnimationType.High2hAttack:
-            case SpearAnimationSystem.AnimationType.Low2hAttack:
-                return new MeleeAttackDamageType(
-                        damage: stats.Damage2hAttack,
-                        damageType: EnumDamageType.PiercingAttack,
-                        collider: new(stats.HeadCollider),
-                        tier: stats.HeadDamageTier,
-                        hitWindow: new(stats.AttackWindow2h[0] / stats.AttackDuration2hMs, stats.AttackWindow2h[1] / stats.AttackDuration2hMs),
-                        knockback: stats.KnockbackAttack2h,
-                        stagger: stats.StaggerAttack2h,
-                        effects: _headCollisionEffects
-                    );
             case SpearAnimationSystem.AnimationType.Low1hAttack:
             case SpearAnimationSystem.AnimationType.High1hAttack:
                 return new MeleeAttackDamageType(
@@ -317,22 +220,10 @@ public sealed class SpearFsm : SpearControls
             default: return null;
         }
     }
-    private MeleeAttackDamageType? GetShaftDamageType(SpearAnimationSystem.AnimationType attackType, SpearStats stats)
+    private MeleeAttackDamageType? GetShaftDamageType(SpearAnimationSystem.AnimationType attackType, JavelinStats stats)
     {
         switch (attackType)
         {
-            case SpearAnimationSystem.AnimationType.High2hAttack:
-            case SpearAnimationSystem.AnimationType.Low2hAttack:
-                return new MeleeAttackDamageType(
-                        damage: stats.DamageShaft,
-                        damageType: EnumDamageType.BluntAttack,
-                        collider: new(stats.ShaftCollider),
-                        tier: stats.ShaftDamageTier,
-                        hitWindow: new(stats.ShaftCollisionWindow2h[0] / stats.AttackDuration2hMs, stats.ShaftCollisionWindow2h[1] / stats.AttackDuration2hMs),
-                        knockback: stats.KnockbackAttack2h,
-                        stagger: stats.StaggerAttack2h,
-                        effects: _shaftCollisionEffects
-                    );
             case SpearAnimationSystem.AnimationType.Low1hAttack:
             case SpearAnimationSystem.AnimationType.High1hAttack:
                 return new MeleeAttackDamageType(
@@ -344,20 +235,6 @@ public sealed class SpearFsm : SpearControls
                         knockback: stats.KnockbackAttack1h,
                         stagger: stats.StaggerAttack1h,
                         effects: _shaftCollisionEffects
-                    );
-            case SpearAnimationSystem.AnimationType.Low1hBlockAttack:
-            case SpearAnimationSystem.AnimationType.High1hBlockAttack:
-            case SpearAnimationSystem.AnimationType.Low2hBlockAttack:
-            case SpearAnimationSystem.AnimationType.High2hBlockAttack:
-                return new MeleeAttackDamageType(
-                        damage: stats.DamageBlockAttack,
-                        damageType: EnumDamageType.BluntAttack,
-                        collider: new(stats.ShaftCollider),
-                        tier: stats.ShaftDamageTier,
-                        hitWindow: new(stats.AttackWindowBlock[0] / stats.AttackDurationBlockMs, stats.AttackWindow1h[1] / stats.AttackDurationBlockMs),
-                        knockback: stats.KnockbackAttackBlock,
-                        stagger: stats.StaggerAttackBlock,
-                        effects: _headCollisionEffects
                     );
             default: return null;
         }
@@ -371,10 +248,6 @@ public sealed class SpearFsm : SpearControls
         {
             StanceType.OneHandedUpper => SpearAnimationSystem.AnimationType.High1hAttack,
             StanceType.OneHandedLower => SpearAnimationSystem.AnimationType.Low1hAttack,
-            StanceType.TwoHandedUpper => SpearAnimationSystem.AnimationType.High2hAttack,
-            StanceType.TwoHandedLower => SpearAnimationSystem.AnimationType.Low2hAttack,
-            StanceType.BlockLower => SpearAnimationSystem.AnimationType.Low2hBlockAttack,
-            StanceType.BlockUpper => SpearAnimationSystem.AnimationType.High2hBlockAttack,
             _ => throw new NotImplementedException()
         };
     }
@@ -384,27 +257,12 @@ public sealed class SpearFsm : SpearControls
         {
             StanceType.OneHandedUpper => SpearAnimationSystem.AnimationType.High1hStance,
             StanceType.OneHandedLower => SpearAnimationSystem.AnimationType.Low1hStance,
-            StanceType.TwoHandedUpper => SpearAnimationSystem.AnimationType.High2hStance,
-            StanceType.TwoHandedLower => SpearAnimationSystem.AnimationType.Low2hStance,
-            StanceType.BlockLower => SpearAnimationSystem.AnimationType.Low2hBlock,
-            StanceType.BlockUpper => SpearAnimationSystem.AnimationType.High2hBlock,
             _ => throw new NotImplementedException()
         };
     }
-    private static SpearAnimationSystem.AnimationType GetBlockAnimationType(StanceType stance)
-    {
-        return stance switch
-        {
-            StanceType.TwoHandedUpper => SpearAnimationSystem.AnimationType.High2hBlock,
-            StanceType.TwoHandedLower => SpearAnimationSystem.AnimationType.Low2hBlock,
-            StanceType.BlockLower => SpearAnimationSystem.AnimationType.Low2hBlock,
-            StanceType.BlockUpper => SpearAnimationSystem.AnimationType.High2hBlock,
-            _ => SpearAnimationSystem.AnimationType.High2hBlock
-        };
-    }
 
 
-    private static Dictionary<SpearAnimationSystem.AnimationType, List<SpearAnimationSystem.AnimationParameters>> GetAnimations(SpearStats stats)
+    private static Dictionary<SpearAnimationSystem.AnimationType, List<SpearAnimationSystem.AnimationParameters>> GetAnimations(JavelinStats stats)
     {
         Dictionary<SpearAnimationSystem.AnimationType, List<SpearAnimationSystem.AnimationParameters>> result = new();
 
@@ -416,7 +274,7 @@ public sealed class SpearFsm : SpearControls
 
         return result;
     }
-    private static SpearAnimationSystem.AnimationParameters? GetAnimation(SpearAnimationSystem.AnimationType animationType, SpearStats stats)
+    private static SpearAnimationSystem.AnimationParameters? GetAnimation(SpearAnimationSystem.AnimationType animationType, JavelinStats stats)
     {
         SpearAnimationSystem.AnimationParameters empty = new(
             "spearsempty",
@@ -425,20 +283,8 @@ public sealed class SpearFsm : SpearControls
 
         return animationType switch
         {
-            SpearAnimationSystem.AnimationType.High2hAttack => new(
-                "spear-high-2h",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDuration2hMs), 0, ProgressModifierType.Sqrt),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDuration2hMs), 1, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDuration2hMs), 0, ProgressModifierType.Bounce)
-                ),
-            SpearAnimationSystem.AnimationType.Low2hAttack => new(
-                "spear-low-2h",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDuration2hMs), 0, ProgressModifierType.SqrtSqrt),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDuration2hMs), 1, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDuration2hMs), 0, ProgressModifierType.Bounce)
-                ),
             SpearAnimationSystem.AnimationType.Low1hAttack => new(
-                "spear-low-1h",
+                "javelin-low-1h",
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDuration1hMs), 0, ProgressModifierType.Bounce),
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDuration1hMs), 1, ProgressModifierType.Cubic),
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDuration1hMs), 0, ProgressModifierType.Bounce)
@@ -449,18 +295,6 @@ public sealed class SpearFsm : SpearControls
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDuration1hMs), 1, ProgressModifierType.Cubic),
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDuration1hMs), 0, ProgressModifierType.Bounce)
                 ),
-            SpearAnimationSystem.AnimationType.Low2hBlockAttack => new(
-                "spear-low-block",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDurationBlockMs), 0, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDurationBlockMs), 1, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDurationBlockMs), 0, ProgressModifierType.Bounce)
-                ),
-            SpearAnimationSystem.AnimationType.High2hBlockAttack => new(
-                "spear-high-block",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDurationBlockMs), 0, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDurationBlockMs), 1, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDurationBlockMs), 0, ProgressModifierType.Bounce)
-                ),
             SpearAnimationSystem.AnimationType.Aim => new(
                 "spear-throw",
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(700), 0, ProgressModifierType.CosShifted)
@@ -469,26 +303,8 @@ public sealed class SpearFsm : SpearControls
                 "spear-throw",
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(_throwDurationMs), 1, ProgressModifierType.Cubic)
                 ),
-
-            SpearAnimationSystem.AnimationType.Low2hBlock => new(
-                "spear-2h-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 2, ProgressModifierType.Bounce)
-                ),
-            SpearAnimationSystem.AnimationType.High2hBlock => new(
-                "spear-2h-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 3, ProgressModifierType.Bounce)
-                ),
-
-            SpearAnimationSystem.AnimationType.Low2hStance => new(
-                "spear-2h-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 0, ProgressModifierType.Bounce)
-                ),
-            SpearAnimationSystem.AnimationType.High2hStance => new(
-                "spear-2h-stances",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 1, ProgressModifierType.Bounce)
-                ),
             SpearAnimationSystem.AnimationType.Low1hStance => new(
-                "spear-1h-stances",
+                "javelin-1h-stances",
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.High1hStance => new(
@@ -501,52 +317,38 @@ public sealed class SpearFsm : SpearControls
     #endregion
 }
 
-public sealed class SpearStats
+public sealed class JavelinStats
 {
     public float MaxReach { get; set; }
 
     #region Damage
     public float DamageShaft { get; set; }
     public float Damage1hAttack { get; set; }
-    public float Damage2hAttack { get; set; }
-    public float DamageBlockAttack { get; set; }
     public int ShaftDamageTier { get; set; }
     public int HeadDamageTier { get; set; }
     #endregion
 
     #region Knockback
     public float KnockbackAttack1h { get; set; }
-    public float KnockbackAttack2h { get; set; }
-    public float KnockbackAttackBlock { get; set; }
     public float StaggerAttack1h { get; set; }
-    public float StaggerAttack2h { get; set; }
-    public float StaggerAttackBlock { get; set; }
     #endregion
 
     #region Colliders
     public float[] HeadCollider { get; set; } = new float[6];
     public float[] ShaftCollider { get; set; } = new float[6];
-    public float[] BlockCollider { get; set; } = new float[6];
     #endregion
 
     #region Timing
     public float AttackDuration1hMs { get; set; }
-    public float AttackDuration2hMs { get; set; }
-    public float AttackDurationBlockMs { get; set; }
 
     public float[] AttackWindow1h { get; set; } = new float[2];
-    public float[] AttackWindow2h { get; set; } = new float[2];
-    public float[] AttackWindowBlock { get; set; } = new float[2];
 
     public float[] ShaftCollisionWindow1h { get; set; } = new float[2];
-    public float[] ShaftCollisionWindow2h { get; set; } = new float[2];
     #endregion
 
     #region Grip
     public float GripMaxLength1h { get; set; } = 1;
     public float GripMinLength1h { get; set; } = 0;
-    public float GripMaxLength2h { get; set; } = 1;
-    public float GripMinLength2h { get; set; } = 0;
     #endregion
 
     #region Sounds
@@ -567,12 +369,5 @@ public sealed class SpearStats
     public float DispersionMax { get; set; } = 0;
     public float AimDuration { get; set; } = 0;
     public float ThrowDamageMultiplier { get; set; } = 1;
-    #endregion
-
-    #region Block
-    public float BlockDamageReduction { get; set; } = 0;
-    public string? BlockSound { get; set; } = null;
-    public string? PerfectBlockSound { get; set; } = null;
-    public float PerfectBlockWindowMs { get; set; } = 0;
     #endregion
 }

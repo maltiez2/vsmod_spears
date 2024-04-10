@@ -6,7 +6,7 @@
       "name": "GroundStorable",
       "properties": {
         "layout": "WallHalves",
-        "wallOffY": 2,
+        "wallOffY": 3,
         "sprintKey": true,
         "selectionBox": {"x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 0.1, "z2": 1},
         "collisionBox": {"x1": 0, "y1": 0, "z1": 0, "x2": 0, "y2": 0, "z2": 0}
@@ -37,10 +37,9 @@
   "attackPowerByType": {"*-copper": 3, "*-tinbronze": 4, "*-bismuthbronze": 3.8, "*-blackbronze": 4.2, "*-iron": 4.5, "*-steel": 5},
   "attributes": {
     "heldItemPitchFollow": 1,
-    "groundStorageTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": 0, "y": 0, "z": 0}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 0.8},
+    "groundStorageTransform": {"translation": {"x": 0.5, "y": 2, "z": 0.41}, "rotation": {"x": 12, "y": 0, "z": 90}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 0.8},
     "damageByType": {"*-copper": 2, "*-tinbronze": 3, "*-bismuthbronze": 3, "*-blackbronze": 3, "*-iron": 3, "*-steel": 4},
     "spearEntityCode": "spear-{type}-{material}",
-    "toolrackTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": 0, "y": 0, "z": 0}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 0.8},
     "projectile": "maltiezspears:spear-{type}-{material}",
     "spearStats": {
       "MaxReach": 6,
@@ -82,8 +81,8 @@
       "PerfectBlockWindowMs": 300,
       "ProjectileSpeed": 0.5,
       "ThrowDamageMultiplier": 1,
-      "DispersionMin": 30,
-      "DispersionMax": 120,
+      "DispersionMin": 120,
+      "DispersionMax": 180,
       "AimDuration": 750
     }
   },

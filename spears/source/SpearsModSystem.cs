@@ -1,9 +1,8 @@
 ﻿using HarmonyLib;
+using Javelins;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.MathTools;
 using Vintagestory.Client.NoObf;
-using Vintagestory.GameContent;
 
 namespace Spears;
 
@@ -11,6 +10,7 @@ public class SpearsModSystem : ModSystem
 {
     public override void Start(ICoreAPI api)
     {
+        api.RegisterItemClass("Spears:JavelinItem", typeof(JavelinItem));
         api.RegisterItemClass("Spears:SpearItem", typeof(SpearItem));
         api.RegisterItemClass("Spears:PikeItem", typeof(PikeItem));
     }
@@ -59,6 +59,32 @@ public class SpearsModSystem : ModSystem
         return true;
     }
 }
+
+public class JavelinItem : Item
+{
+    public override void OnLoaded(ICoreAPI api)
+    {
+        base.OnLoaded(api);
+
+        JavelinStats stats = Attributes["javelinStats"].AsObject<JavelinStats>();
+        _fsm = new(api, this, stats);
+    }
+
+    public override void OnHeldRenderOpaque(ItemSlot inSlot, IClientPlayer byPlayer)
+    {
+        base.OnHeldRenderOpaque(inSlot, byPlayer);
+
+        _fsm?.OnRender(inSlot, byPlayer);
+    }
+
+    public override void OnHeldAttackStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandHandling handling)
+    {
+        handling = EnumHandHandling.PreventDefault;
+    }
+
+    private JavelinFsm? _fsm;
+}
+
 
 public class SpearItem : Item
 {
@@ -112,7 +138,7 @@ public class PikeItem : Item
     public bool OnMouseWheel(ItemSlot slot, IClientPlayer byPlayer, float delta)
     {
         if (!byPlayer.Entity.Controls.RightMouseDown) return false;
-        
+
         return _fsm?.ChangeGrip(slot, byPlayer, delta) ?? false;
     }
 

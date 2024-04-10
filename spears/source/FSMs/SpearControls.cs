@@ -128,7 +128,6 @@ public abstract class SpearControls
     }
     protected bool StartBlock(ItemSlot slot, IPlayer? player)
     {
-        Console.WriteLine($"StartBlock: {GetStance(slot)}");
         if (player == null) return false;
         if (!EnsureStance(slot, player)) return false;
         if (!CanAttack(player)) return false;
@@ -224,18 +223,17 @@ public abstract class SpearControls
     [InputHandler(state: "*-*-*", "ItemDropped", "SlotDeselected")]
     protected bool Deselected(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"Deselected: {GetStance(slot)}");
         if (player == null) return false;
-        Fsm.SetState(slot, "onehanded-lower-idle");
+        Fsm.SetState(slot, (2, "idle"));
         OnDeselected(slot, player);
         return false;
     }
     [InputHandler(state: "*-*-*", "ItemAdded", "SlotSelected")]
     protected bool Selected(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"Selected: {GetStance(slot)}");
         if (player == null) return false;
-        Fsm.SetState(slot, "onehanded-lower-idle");
+        Fsm.SetState(slot, (2, "idle"));
+        EnsureStance(slot, player);
         OnSelected(slot, player);
         return false;
     }
@@ -243,7 +241,6 @@ public abstract class SpearControls
     [InputHandler(states: new string[] { "*-*-aim" }, "LeftMouseUp")]
     protected bool StartThrow(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"StartThrow: {GetStance(slot)}");
         if (player == null) return false;
         if (!EnsureStance(slot, player)) return false;
         if (!CanAttack(player)) return false;
@@ -255,7 +252,6 @@ public abstract class SpearControls
     [InputHandler(states: new string[] { "*-*-*", "*-*-block" }, "Aim")]
     protected bool StartAim(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"StartAim: {GetStance(slot)}");
         if (player == null) return false;
         if (!EnsureStance(slot, player)) return false;
         if (!CanAttack(player)) return false;
@@ -271,7 +267,6 @@ public abstract class SpearControls
     [InputHandler(states: new string[] { "*-*-aim" }, "RightMouseDown", "GripChange", "StanceChange", "InterruptAction")]
     protected bool CancelAim(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"CancelAim: {GetStance(slot)}");
         if (player == null) return false;
         Fsm.SetState(slot, (2, "idle"));
         OnCancelAim(slot, player, GetStance(slot));
@@ -281,7 +276,6 @@ public abstract class SpearControls
     [InputHandler(states: new string[] { "*-*-idle", "*-*-block" }, "LeftMouseDown")]
     protected bool StartAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"StartAttack: {GetStance(slot)}");
         if (player == null) return false;
         if (!EnsureStance(slot, player)) return false;
         if (!CanAttack(player)) return false;
@@ -295,7 +289,6 @@ public abstract class SpearControls
     [InputHandler(state: "*-*-attack", "InterruptAction")]
     protected bool CancelAttack(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"CancelAttack: {GetStance(slot)}");
         if (player == null) return false;
         Fsm.SetState(slot, (2, "idle"));
         OnCancelAttack(slot, player, GetStance(slot));
@@ -305,7 +298,6 @@ public abstract class SpearControls
     [InputHandler(states: new string[] { "twohanded-*-idle", "twohanded-*-attack" }, "RightMouseDown")]
     protected bool StartBlock(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"StartBlock: {GetStance(slot)}");
         if (player == null) return false;
         if (!EnsureStance(slot, player)) return false;
         if (!CanAttack(player)) return false;
@@ -319,7 +311,6 @@ public abstract class SpearControls
     [InputHandler(state: "*-*-block", "RightMouseUp", "InterruptAction")]
     protected bool CancelBlock(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"CancelBlock: {GetStance(slot)}");
         if (player == null) return false;
         Fsm.SetState(slot, (2, "idle"));
         OnCancelBlock(slot, player, GetStance(slot), Attacking(slot));
@@ -329,7 +320,6 @@ public abstract class SpearControls
     [InputHandler(states: new string[] { "*-lower-idle", "*-lower-block" }, "StanceChange")]
     protected bool ToggleStanceToLower(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"ToggleStanceToLower: {GetStance(slot)}");
         if (player == null) return false;
         if (!CanAttack(player)) return false;
         Fsm.SetState(slot, (1, "upper"));
@@ -339,7 +329,6 @@ public abstract class SpearControls
     [InputHandler(states: new string[] { "*-upper-idle", "*-upper-block" }, "StanceChange")]
     protected bool ToggleStanceToUpper(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"ToggleStanceToUpper: {GetStance(slot)}");
         if (player == null) return false;
         if (!CanAttack(player)) return false;
         Fsm.SetState(slot, (1, "lower"));
@@ -350,7 +339,6 @@ public abstract class SpearControls
     [InputHandler(states: new string[] { "twohanded-*-idle" }, "GripChange")]
     protected bool ToggleGripToOnehanded(ItemSlot slot, IPlayer? player, IInput input, IState state)
     {
-        Console.WriteLine($"ToggleGripToOnehanded: {GetStance(slot)}");
         if (player == null) return false;
         if (!CanAttack(player)) return false;
         Fsm.SetState(slot, (0, "onehanded"));

@@ -154,9 +154,9 @@ public sealed class SpearAnimationSystem : BaseSystem
         _animationSystem.Run(fpTarget, new AnimationSequence(parameters.HandsFp, runParameters), synchronize: false);
         _animationSystem.Run(fpTarget, new AnimationSequence(parameters.LegsFp, runParameters), synchronize: false);
     }
-    public void EaseOut(IPlayer player, TimeSpan duration)
+    public void EaseOut(IPlayer player, TimeSpan duration, AnimationType validAnimation = AnimationType.Low2hStance)
     {
-        EaseOut(player, AnimationType.Low2hStance, duration);
+        EaseOut(player, validAnimation, duration);
     }
     public void RegisterAnimations(Dictionary<AnimationType, List<AnimationParameters>> animations)
     {

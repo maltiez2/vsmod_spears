@@ -15,11 +15,9 @@
 	"elements": [
 		{
 			"name": "Spear",
-			"from": [ 6.0, 0.0, -12.0 ],
-			"to": [ 6.0, 0.0, -12.0 ],
-			"rotationOrigin": [ 0.0, 0.0, -12.0 ],
-			"rotationX": 90.0,
-			"rotationZ": -90.0,
+			"from": [ 6.0, 0.0, 8.0 ],
+			"to": [ 6.0, 0.0, 8.0 ],
+			"rotationOrigin": [ 0.0, 0.0, 8.0 ],
 			"faces": {
 				"north": { "texture": "#shaft", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
 				"east": { "texture": "#shaft", "uv": [ 0.0, 0.0, 0.5, 0.5 ] },
@@ -86,16 +84,16 @@
 						},
 						{
 							"name": "shaft_5",
-							"from": [ -26.0, -0.5, -0.5 ],
+							"from": [ -25.0, -0.5, -0.5 ],
 							"to": [ -10.0, 0.5, 0.5 ],
-							"rotationOrigin": [ -27.5, -8.0, 0.0 ],
+							"rotationOrigin": [ -26.5, -8.0, 0.0 ],
 							"faces": {
-								"north": { "texture": "#shaft", "uv": [ 0.0, 5.5, 16.0, 6.5 ], "windMode": [-1,-1,-1,-1] },
+								"north": { "texture": "#shaft", "uv": [ 0.0, 5.5, 15.0, 6.5 ], "windMode": [-1,-1,-1,-1] },
 								"east": { "texture": "#shaft", "uv": [ 0.5, 0.5, 1.5, 1.5 ] },
-								"south": { "texture": "#shaft", "uv": [ 0.0, 10.5, 16.0, 11.5 ] },
+								"south": { "texture": "#shaft", "uv": [ 0.0, 10.5, 15.0, 11.5 ] },
 								"west": { "texture": "#shaft", "uv": [ 0.0, 0.0, 1.0, 1.0 ], "windMode": [-1,-1,-1,-1] },
-								"up": { "texture": "#shaft", "uv": [ 0.0, 4.5, 16.0, 5.5 ] },
-								"down": { "texture": "#shaft", "uv": [ 0.0, 5.0, 16.0, 6.0 ] }
+								"up": { "texture": "#shaft", "uv": [ 0.0, 4.5, 15.0, 5.5 ] },
+								"down": { "texture": "#shaft", "uv": [ 0.0, 5.0, 15.0, 6.0 ] }
 							}
 						}
 					]

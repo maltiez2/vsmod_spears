@@ -4,9 +4,9 @@
     <ModName>Spears</ModName>
     <ModType>code</ModType>
     <GameVersion>1.19.4</GameVersion>
-    <Version>0.0.7</Version>
+    <Version>0.1.2</Version>
     <ModId>maltiezspears</ModId>
-    <Description>Reworks spears</Description>
+    <Description>Adds javelins, spears and pikes with collision based hit detection.</Description>
     <Side>Universal</Side>
     <RequiredOnClient>true</RequiredOnClient>
     <RequiredOnServer>true</RequiredOnServer>
