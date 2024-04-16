@@ -25,6 +25,9 @@
     <Dependencies Include="fsmlib">
       <Version>0.4.3</Version>
     </Dependencies>
+    <Dependencies Include="meleeweaponsframework">
+      <Version>0.0.1</Version>
+    </Dependencies>
   </ItemGroup>
 
   <!-- Project settings -->
@@ -59,6 +62,9 @@
     <Reference Include="fsmlib">
       <HintPath>..\..\fsmlib\fsmlib\bin\Release\Mods\fsmlib\fsmlib.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="meleeweaponsframework">
+      <HintPath>..\..\meleeweaponsframework\meleeweaponsframework\bin\Release\Mods\meleeweaponsframework\meleeweaponsframework.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK.Compute">
       <HintPath>$(GameDirectory)\Lib\OpenTK.Compute.dll</HintPath>
