@@ -1,0 +1,170 @@
+﻿[
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "javelin-high-1h-hands", "animation": "javelin-high-1h-hands", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "javelin-high-1h-hands",
+      "code": "javelin-high-1h-hands",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 2,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "UpperArmR": {"rotationX": 0, "rotationY": -20, "rotationZ": -51},
+            "LowerArmR": {"rotationX": -16, "rotationY": 24, "rotationZ": -134},
+            "ItemAnchor": {"offsetX": 9, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 180, "rotationZ": -10}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "UpperArmR": {"rotationX": 0, "rotationY": -20, "rotationZ": -78},
+            "LowerArmR": {"rotationX": 1, "rotationY": -3, "rotationZ": -33},
+            "ItemAnchor": {"offsetX": 9, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 180, "rotationZ": 55}
+          }
+        }
+      ]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "javelin-high-1h-legs", "animation": "javelin-high-1h-legs", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "javelin-high-1h-legs",
+      "code": "javelin-high-1h-legs",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 2,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "LowerTorso": {"offsetX": 0.5, "offsetY": -0.1, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperTorso": {"rotationX": 0, "rotationY": -10, "rotationZ": 0},
+            "Neck": {"rotationX": -1, "rotationY": 10, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 6},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 4},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": -18},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 25}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "LowerTorso": {"offsetX": -3.5, "offsetY": -0.5, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperTorso": {"rotationX": 0, "rotationY": 20, "rotationZ": 0},
+            "Neck": {"rotationX": 2, "rotationY": -20, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 23},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": -33},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 33}
+          }
+        }
+      ]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "javelin-high-1h-hands-fp", "animation": "javelin-high-1h-hands-fp", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "javelin-high-1h-hands-fp",
+      "code": "javelin-high-1h-hands-fp",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 2,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "UpperArmR": {"rotationX": 0, "rotationY": -20, "rotationZ": -51},
+            "LowerArmR": {"rotationX": -16, "rotationY": 24, "rotationZ": -134},
+            "ItemAnchor": {"offsetX": 9, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 180, "rotationZ": -10}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "UpperArmR": {"rotationX": 0, "rotationY": -20, "rotationZ": -78},
+            "LowerArmR": {"rotationX": 1, "rotationY": -3, "rotationZ": -33},
+            "ItemAnchor": {"offsetX": 9, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 180, "rotationZ": 55}
+          }
+        }
+      ]
+    }
+  },
+  {
+    "file": "game:entities/humanoid/player",
+    "op": "add",
+    "path": "/client/animations/-",
+    "value": {"code": "javelin-high-1h-legs-fp", "animation": "javelin-high-1h-legs-fp", "animationSpeed": 1, "blendMode": "Add"}
+  },
+  {
+    "file": "game:shapes/entity/humanoid/seraph-faceless",
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "javelin-high-1h-legs-fp",
+      "code": "javelin-high-1h-legs-fp",
+      "easeInSpeed": 1,
+      "easeOutSpeed": 1,
+      "quantityframes": 2,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Hold",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "LowerTorso": {"offsetX": 0.5, "offsetY": -0.1, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperTorso": {"rotationX": 0, "rotationY": -10, "rotationZ": 0},
+            "Neck": {"rotationX": -1, "rotationY": 10, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 6},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 4},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": -18},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 25}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "LowerTorso": {"offsetX": -3.5, "offsetY": -0.5, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperTorso": {"rotationX": 0, "rotationY": 20, "rotationZ": 0},
+            "Neck": {"rotationX": 2, "rotationY": -20, "rotationZ": 0},
+            "UpperFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 23},
+            "LowerFootL": {"rotationX": 0, "rotationY": 0, "rotationZ": 0},
+            "UpperFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": -33},
+            "LowerFootR": {"rotationX": 0, "rotationY": 0, "rotationZ": 33}
+          }
+        }
+      ]
+    }
+  }
+]

@@ -58,10 +58,10 @@ public sealed class JavelinFsm : JavelinControls
     {
         _animationSystem?.Track(player);
 
-        /*if (_attacksForDebugRendering != null && _lastAttack != null)
+        if (_attacksForDebugRendering != null && _lastAttack != null)
         {
             _attacksForDebugRendering[_lastAttack.Value].RenderDebugColliders(player, slot);
-        }*/
+        }
     }
     #endregion
 
@@ -76,10 +76,13 @@ public sealed class JavelinFsm : JavelinControls
     private readonly ICoreAPI _api;
     private const int _throwDurationMs = 300;
     private const int _terrainHitCooldownMs = 500;
+    private long _attackCancelTimer = -1;
 
     protected override bool OnStartAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
+        Console.WriteLine("OnStartAttack");
         _lastAttack = GetAttackAnimationType(stanceType);
+        if (_attackCancelTimer != -1) _api.World.UnregisterCallback(_attackCancelTimer);
         _attacksSystem?.Start(
                 GetAttackAnimationType(stanceType),
                 player,
@@ -108,6 +111,8 @@ public sealed class JavelinFsm : JavelinControls
 
     protected override void OnCancelAttack(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
+        Console.WriteLine("OnCancelAttack");
+        _attackCancelTimer = -1;
         _attacksSystem?.Stop(GetAttackAnimationType(stanceType), player);
         _animationSystem?.Play(player, GetStanceAnimationType(stanceType));
     }
@@ -125,10 +130,14 @@ public sealed class JavelinFsm : JavelinControls
     {
         player.Entity.Stats.Remove("walkspeed", "maltiezspears");
         _animationSystem?.EaseOut(player, _easeOutTime, SpearAnimationSystem.AnimationType.Low1hStance);
+
+        HarmonyPatches.FpHandsOffset = HarmonyPatches.DefaultFpHandsOffset;
     }
     protected override void OnSelected(ItemSlot slot, IPlayer player)
     {
         _animationSystem?.Play(player, GetStanceAnimationType(GetStance(slot)));
+
+        HarmonyPatches.FpHandsOffset = 0f;
     }
 
     private void OnAttackFinished(ItemSlot slot, IPlayer player, StanceType stanceType)
@@ -137,18 +146,30 @@ public sealed class JavelinFsm : JavelinControls
     }
     private bool OnEntityHit(ItemSlot slot, IPlayer player)
     {
+        if (_stats.StopAttackOnEntityHit)
+        {
+            _attacksSystem?.Stop(GetAttackAnimationType(GetStance(slot)), player);
+            _animationSystem?.Play(player, GetStanceAnimationType(GetStance(slot)));
+            Console.WriteLine("Enqueue Cancel attack");
+            _attackCancelTimer = _api.World.RegisterCallback((dt) => CancelAttack(slot, player), millisecondDelay: _terrainHitCooldownMs);
+        }
+
         slot.Itemstack.Item.DamageItem(player.Entity.World, player.Entity, slot, _stats.DurabilitySpentOnEntityHit);
-        return false;
+        
+        return _stats.StopAttackOnEntityHit;
     }
     private bool OnTerrainHit(ItemSlot slot, IPlayer player)
     {
-        _attacksSystem?.Stop(GetAttackAnimationType(GetStance(slot)), player);
-        _animationSystem?.Play(player, GetStanceAnimationType(GetStance(slot)));
+        if (_stats.StopAttackOnTerrainHit)
+        {
+            _attacksSystem?.Stop(GetAttackAnimationType(GetStance(slot)), player);
+            _animationSystem?.Play(player, GetStanceAnimationType(GetStance(slot)));
+            _attackCancelTimer = _api.World.RegisterCallback((dt) => CancelAttack(slot, player), millisecondDelay: _terrainHitCooldownMs);
+        }
+        
         slot.Itemstack.Item.DamageItem(player.Entity.World, player.Entity, slot, _stats.DurabilitySpentOnTerrainHit);
 
-        _api.World.RegisterCallback((dt) => CancelAttack(slot, player), millisecondDelay: _terrainHitCooldownMs);
-
-        return true;
+        return _stats.StopAttackOnTerrainHit;
     }
 
     private void Throw(ItemSlot slot, IPlayer player, StanceType stanceType)
@@ -285,15 +306,15 @@ public sealed class JavelinFsm : JavelinControls
         {
             SpearAnimationSystem.AnimationType.Low1hAttack => new(
                 "javelin-low-1h",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDuration1hMs), 0, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDuration1hMs), 1, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDuration1hMs), 0, ProgressModifierType.Bounce)
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(stats.AttackWindow1h[0]), 0, ProgressModifierType.CosShifted),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(stats.AttackWindow1h[1] - stats.AttackWindow1h[0]), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(stats.AttackEaseOutAnimationTypeMs), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.High1hAttack => new(
-                "spear-high-1h",
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.4 * stats.AttackDuration1hMs), 0, ProgressModifierType.Bounce),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.3 * stats.AttackDuration1hMs), 1, ProgressModifierType.Cubic),
-                RunParameters.EaseIn(TimeSpan.FromMilliseconds(0.6 * stats.AttackDuration1hMs), 0, ProgressModifierType.Bounce)
+                "javelin-high-1h",
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(stats.AttackWindow1h[0]), 0, ProgressModifierType.Sin),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(stats.AttackWindow1h[1] - stats.AttackWindow1h[0]), 1, ProgressModifierType.Cubic),
+                RunParameters.EaseIn(TimeSpan.FromMilliseconds(stats.AttackEaseOutAnimationTypeMs), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.Aim => new(
                 "spear-throw",
@@ -308,7 +329,7 @@ public sealed class JavelinFsm : JavelinControls
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 0, ProgressModifierType.Bounce)
                 ),
             SpearAnimationSystem.AnimationType.High1hStance => new(
-                "spear-1h-stances",
+                "javelin-1h-stances",
                 RunParameters.EaseIn(TimeSpan.FromMilliseconds(500), 1, ProgressModifierType.Bounce)
                 ),
             _ => null
@@ -320,6 +341,8 @@ public sealed class JavelinFsm : JavelinControls
 public sealed class JavelinStats
 {
     public float MaxReach { get; set; }
+    public bool StopAttackOnTerrainHit { get; set; } = true;
+    public bool StopAttackOnEntityHit { get; set; } = false;
 
     #region Damage
     public float DamageShaft { get; set; }
@@ -340,10 +363,9 @@ public sealed class JavelinStats
 
     #region Timing
     public float AttackDuration1hMs { get; set; }
-
     public float[] AttackWindow1h { get; set; } = new float[2];
-
     public float[] ShaftCollisionWindow1h { get; set; } = new float[2];
+    public float AttackEaseOutAnimationTypeMs { get; set; }
     #endregion
 
     #region Grip

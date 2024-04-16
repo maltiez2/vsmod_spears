@@ -182,10 +182,14 @@ public sealed class SpearFsm : SpearControls
         _animationSystem?.ResetGrip(player);
         EndBlock(slot, player);
         _grip = 0;
+
+        HarmonyPatches.FpHandsOffset = HarmonyPatches.DefaultFpHandsOffset;
     }
     protected override void OnSelected(ItemSlot slot, IPlayer player)
     {
         _animationSystem?.Play(player, GetStanceAnimationType(GetStance(slot)));
+
+        HarmonyPatches.FpHandsOffset = 0f;
     }
 
     private void OnAttackFinished(ItemSlot slot, IPlayer player, StanceType stanceType)

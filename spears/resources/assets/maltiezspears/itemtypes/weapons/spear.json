@@ -86,7 +86,7 @@
       "AimDuration": 750
     }
   },
-  "durabilitybytype": {"*-copper": 64, "*-tinbronze": 600, "*-bismuthbronze": 200, "*-blackbronze": 500, "*-iron": 400, "*-steel": 1250},
+  "durabilitybytype": {"*-copper": 300, "*-tinbronze": 600, "*-bismuthbronze": 400, "*-blackbronze": 500, "*-iron": 400, "*-steel": 1250},
   "creativeinventory": {"maltiezspears": ["*"]},
   "guiTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": 39, "y": 0, "z": -130}, "origin": {"x": 1, "y": 0.1, "z": 0.3}, "scale": 2},
   "groundTransform": {"translation": {"x": 0, "y": 0, "z": 0}, "rotation": {"x": 0, "y": 0, "z": 0}, "origin": {"x": 0, "y": 0, "z": 0}, "scale": 4},

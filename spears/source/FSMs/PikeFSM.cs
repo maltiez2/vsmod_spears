@@ -115,10 +115,14 @@ public class PikeFsm : PikeControls
         AnimationSystem?.EaseOut(player, _easeOutTime);
         AnimationSystem?.ResetGrip(player);
         Grip = 0;
+
+        HarmonyPatches.FpHandsOffset = HarmonyPatches.DefaultFpHandsOffset;
     }
     protected override void OnSelected(ItemSlot slot, IPlayer player)
     {
         AnimationSystem?.Play(player, GetStanceAnimationType(StanceType.Shoulder));
+
+        HarmonyPatches.FpHandsOffset = 0f;
     }
 
     protected virtual bool OnEntityHit(ItemSlot slot, IPlayer player)

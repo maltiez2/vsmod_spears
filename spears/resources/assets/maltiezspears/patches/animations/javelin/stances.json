@@ -14,10 +14,10 @@
       "code": "javelin-1h-stances-legs",
       "easeInSpeed": 1,
       "easeOutSpeed": 1,
-      "quantityframes": 1,
+      "quantityframes": 2,
       "onActivityStopped": "EaseOut",
       "onAnimationEnd": "Hold",
-      "keyframes": [{"frame": 0, "elements": {}}]
+      "keyframes": [{"frame": 0, "elements": {}}, {"frame": 1, "elements": {}}]
     }
   },
   {
@@ -35,7 +35,7 @@
       "code": "javelin-1h-stances-hands",
       "easeInSpeed": 1,
       "easeOutSpeed": 1,
-      "quantityframes": 1,
+      "quantityframes": 2,
       "onActivityStopped": "EaseOut",
       "onAnimationEnd": "Hold",
       "keyframes": [
@@ -44,7 +44,15 @@
           "elements": {
             "UpperArmR": {"rotationX": 5, "rotationY": 0, "rotationZ": 3},
             "LowerArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": -54},
-            "ItemAnchor": {"offsetX": 12, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 14}
+            "ItemAnchor": {"offsetX": 8, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 14}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "UpperArmR": {"rotationX": 0, "rotationY": -20, "rotationZ": -33},
+            "LowerArmR": {"rotationX": -10, "rotationY": 18, "rotationZ": -117},
+            "ItemAnchor": {"offsetX": 8, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 180, "rotationZ": 0}
           }
         }
       ]
@@ -65,10 +73,10 @@
       "code": "javelin-1h-stances-legs-fp",
       "easeInSpeed": 1,
       "easeOutSpeed": 1,
-      "quantityframes": 1,
+      "quantityframes": 2,
       "onActivityStopped": "EaseOut",
       "onAnimationEnd": "Hold",
-      "keyframes": [{"frame": 0, "elements": {}}]
+      "keyframes": [{"frame": 0, "elements": {}}, {"frame": 1, "elements": {}}]
     }
   },
   {
@@ -86,7 +94,7 @@
       "code": "javelin-1h-stances-hands-fp",
       "easeInSpeed": 1,
       "easeOutSpeed": 1,
-      "quantityframes": 1,
+      "quantityframes": 2,
       "onActivityStopped": "EaseOut",
       "onAnimationEnd": "Hold",
       "keyframes": [
@@ -95,7 +103,15 @@
           "elements": {
             "UpperArmR": {"rotationX": 5, "rotationY": 0, "rotationZ": 3},
             "LowerArmR": {"rotationX": 0, "rotationY": 0, "rotationZ": -54},
-            "ItemAnchor": {"offsetX": 12, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 14}
+            "ItemAnchor": {"offsetX": 8, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 0, "rotationZ": 14}
+          }
+        },
+        {
+          "frame": 1,
+          "elements": {
+            "UpperArmR": {"rotationX": 0, "rotationY": -20, "rotationZ": -33},
+            "LowerArmR": {"rotationX": -10, "rotationY": 18, "rotationZ": -117},
+            "ItemAnchor": {"offsetX": 8, "offsetY": 0, "offsetZ": 0, "rotationX": 0, "rotationY": 180, "rotationZ": 0}
           }
         }
       ]

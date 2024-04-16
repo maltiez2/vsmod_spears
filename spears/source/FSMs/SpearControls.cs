@@ -15,8 +15,8 @@ public abstract class SpearControls
 
         BaseInputProperties inputProperties = new()
         {
-            Statuses = new IStatusModifier.StatusType[] { IStatusModifier.StatusType.OnGround },
-            StatusesCheckType = IStandardInput.MultipleCheckType.All,
+            /*Statuses = new IStatusModifier.StatusType[] { IStatusModifier.StatusType.OnGround },
+            StatusesCheckType = IStandardInput.MultipleCheckType.All,*/
             KeyModifiers = EnumModifierKey.ALT,
             KeyModifiersCheckType = IKeyModifier.KeyModifierType.NotPresent
         };
@@ -35,10 +35,10 @@ public abstract class SpearControls
 
 
         ActionInputProperties interruptActions = new(
-            EnumEntityAction.Sneak,
-            //EnumEntityAction.Sprint,
+            /*EnumEntityAction.Sneak,
+            EnumEntityAction.Sprint,
             EnumEntityAction.Jump,
-            EnumEntityAction.Glide,
+            EnumEntityAction.Glide,*/
             EnumEntityAction.FloorSit
             );
 
@@ -51,11 +51,11 @@ public abstract class SpearControls
     {
         EntityControls controls = player.Entity.Controls;
 
-        if (controls.Sneak) return false;
+        /*if (controls.Sneak) return false;
         if (controls.Sprint && controls.Backward) return false;
         if (controls.FloorSitting) return false;
         if (controls.Gliding) return false;
-        if (controls.Jump) return false;
+        if (controls.Jump) return false;*/
 
         return true;
     }

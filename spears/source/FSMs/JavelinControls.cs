@@ -15,8 +15,8 @@ public abstract class JavelinControls
 
         BaseInputProperties inputProperties = new()
         {
-            Statuses = new IStatusModifier.StatusType[] { IStatusModifier.StatusType.OnGround },
-            StatusesCheckType = IStandardInput.MultipleCheckType.All,
+            /*Statuses = new IStatusModifier.StatusType[] { IStatusModifier.StatusType.OnGround },
+            StatusesCheckType = IStandardInput.MultipleCheckType.All,*/
             KeyModifiers = EnumModifierKey.ALT,
             KeyModifiersCheckType = IKeyModifier.KeyModifierType.NotPresent
         };
@@ -34,10 +34,10 @@ public abstract class JavelinControls
 
 
         ActionInputProperties interruptActions = new(
-            EnumEntityAction.Sneak,
+            //EnumEntityAction.Sneak,
             //EnumEntityAction.Sprint,
-            EnumEntityAction.Jump,
-            EnumEntityAction.Glide,
+            //EnumEntityAction.Jump,
+            //EnumEntityAction.Glide,
             EnumEntityAction.FloorSit
             );
 
@@ -50,11 +50,11 @@ public abstract class JavelinControls
     {
         EntityControls controls = player.Entity.Controls;
 
-        if (controls.Sneak) return false;
+        /*if (controls.Sneak) return false;
         if (controls.Sprint && controls.Backward) return false;
         if (controls.FloorSitting) return false;
         if (controls.Gliding) return false;
-        if (controls.Jump) return false;
+        if (controls.Jump) return false;*/
 
         return true;
     }
@@ -100,6 +100,7 @@ public abstract class JavelinControls
     protected void CancelAttack(ItemSlot slot, IPlayer player)
     {
         if (slot.Itemstack?.Item == null) return;
+        Console.WriteLine("CancelAttack");
         Fsm.SetState(slot, (2, "idle"));
         OnCancelAttack(slot, player, GetStance(slot));
     }

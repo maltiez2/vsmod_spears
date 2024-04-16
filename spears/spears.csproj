@@ -4,7 +4,7 @@
     <ModName>Spears</ModName>
     <ModType>code</ModType>
     <GameVersion>1.19.4</GameVersion>
-    <Version>0.1.2</Version>
+    <Version>0.1.5</Version>
     <ModId>maltiezspears</ModId>
     <Description>Adds javelins, spears and pikes with collision based hit detection.</Description>
     <Side>Universal</Side>
@@ -32,6 +32,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <!-- Paths -->
