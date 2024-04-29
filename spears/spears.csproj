@@ -59,10 +59,6 @@
       <HintPath>..\..\animationmanagerlib\AnimationManager\bin\Release\Mods\animationmanagerlib\AnimationManager.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="fsmlib">
-      <HintPath>..\..\fsmlib\fsmlib\bin\Release\Mods\fsmlib\fsmlib.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="meleeweaponsframework">
       <HintPath>..\..\meleeweaponsframework\meleeweaponsframework\bin\Release\Mods\meleeweaponsframework\meleeweaponsframework.dll</HintPath>
     </Reference>

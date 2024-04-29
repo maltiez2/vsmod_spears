@@ -1,9 +1,6 @@
 ﻿using AnimationManagerLib.API;
 using MaltiezFSM;
 using MaltiezFSM.Framework.Simplified.Systems;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
@@ -42,7 +39,7 @@ public sealed class SpearFsm : SpearControls
         }
         else
         {
-            _attacksSystem = new(api, _animationSystem, GetAttacks(stats, api), debugName: "spear-attacks");  
+            _attacksSystem = new(api, _animationSystem, GetAttacks(stats, api), debugName: "spear-attacks");
         }
 
         _blockParameters = BlockParameters.FrontBlock(api, stats.BlockDamageReduction, new(stats.BlockSound), new(stats.PerfectBlockSound), null, TimeSpan.FromMilliseconds(stats.PerfectBlockWindowMs));
@@ -220,7 +217,7 @@ public sealed class SpearFsm : SpearControls
     private void Throw(ItemSlot slot, IPlayer player, StanceType stanceType)
     {
         if (slot.Itemstack?.Item == null) return;
-        
+
         if (_aimingSystem != null && _projectileSystem != null)
         {
             DirectionOffset offset = _aimingSystem.GetShootingDirectionOffset(slot, player);
